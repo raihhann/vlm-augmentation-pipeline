@@ -1,6 +1,6 @@
 # Image Augmentation Evaluation Pipeline for Vision-Language Models
 
-This repository contains a research-oriented evaluation pipeline for multimodal vision-language systems. It is part of a research project at the University of Stuttgart and includes both standard and custom proposed augmentation methods.
+This repository contains a research-oriented evaluation pipeline for multimodal vision-language systems. It is part of a **ongoing** research project at the University of Stuttgart and includes both standard and custom proposed augmentation methods. This repo is not the final version of the software it is still work in progress
 
 ## Overview
 
