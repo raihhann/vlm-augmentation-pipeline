@@ -13,3 +13,4 @@ ultralytics
 supervision
 rembg
 timm
+onnxruntime
