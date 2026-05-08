@@ -15,6 +15,8 @@ Later: replace mock logic with real metrics.
 import time
 import random
 from bert_score import score
+from nltk.translate.bleu_score import sentence_bleu, SmoothingFunction
+
 
 
 # ==========================================
@@ -42,11 +44,12 @@ def compute_bert_score(prediction: str, ground_truth: str) -> float:
 # Mock BLEU Score
 # ==========================================
 def compute_bleu(prediction: str, ground_truth: str) -> float:
-    """
-    TODO:
-    Replace with nltk or sacrebleu.
-    """
-    return round(random.uniform(0.6, 0.95), 4)
+    """Calculates linguistic overlap (n-gram similarity)."""
+    chencherry = SmoothingFunction()
+    # BLEU expects lists of tokens
+    ref_tokens = [ground_truth.split()]
+    cand_tokens = prediction.split()
+    return sentence_bleu(ref_tokens, cand_tokens, smoothing_function=chencherry.method1)
 
 
 # ==========================================
