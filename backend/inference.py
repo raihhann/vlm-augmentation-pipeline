@@ -6,7 +6,13 @@ from PIL import Image
 def run_inference(model: str, image, prompt: str , type: str) -> str:
     print(f"Running inference with model: {model}, prompt: {prompt}, type: {type}")
     model_lower = model.lower()
-
+    
+    if type == "augmented":
+        final_prompt = (
+            "The provided image is a vertical stack of two versions of the same scene."
+            "The top half is the original image, and the bottom half is the augmented version. "
+            "Based on this layout, please answer the following: {prompt}"
+        )
     # --- Pre-process image if it is a PIL object ---
     if isinstance(image, Image.Image):
         buffered = BytesIO()
@@ -23,7 +29,7 @@ def run_inference(model: str, image, prompt: str , type: str) -> str:
                 model=model,
                 messages=[{
                     'role': 'user',
-                    'content': prompt,
+                    'content': final_prompt if type == "augmented" else prompt,
                     'images': [image_input] # Ollama accepts path string OR bytes
                 }],
             )
