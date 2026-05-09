@@ -117,7 +117,7 @@ async def process_image(
             await asyncio.sleep(0.01)
 
             # -------- Augmented inference --------
-            augmented_output = run_inference(model, augmented_image, prompt , "augmented")
+            augmented_output = run_inference(model, augmented_path_disk, prompt , "augmented")
             end_aug = time.time()
 
             yield "data: Running original inference...\n\n"
@@ -125,7 +125,7 @@ async def process_image(
 
             # -------- Original inference --------
             start_original = time.time()
-            original_output = run_inference(model, image, prompt , "original")
+            original_output = run_inference(model, media_path_disk, prompt , "original")
             end_original = time.time()
 
             print("Start Time:", start_original, "End Time:", end_original)
