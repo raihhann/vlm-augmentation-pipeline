@@ -24,7 +24,7 @@ from nltk.translate.bleu_score import sentence_bleu, SmoothingFunction
 # ==========================================
 def measure_inference_time(start_time: float, end_time: float) -> float:
     """
-    Computes total inference time in milliseconds.
+    Computes total inference time in milliseconds..
     """
     return round((end_time - start_time), 2)
 
