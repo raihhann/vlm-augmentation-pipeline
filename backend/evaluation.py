@@ -35,7 +35,7 @@ def measure_inference_time(start_time: float, end_time: float) -> float:
 def compute_bert_score(prediction: str, ground_truth: str) -> float:
     """Calculates semantic similarity using BERT embeddings."""
     print("Calculating BertScore")
-    P, R, F1 = score([prediction], [ground_truth] ,lang="en", verbose=False)
+    P, R, F1 = score([prediction], [ground_truth] ,lang="en", model_type="distilbert-base-uncased", verbose=False)
     print(f"Computed BERTScore - P: {P.item():.4f}, R: {R.item():.4f}, F1: {F1.item():.4f}")
     return F1.item()
 

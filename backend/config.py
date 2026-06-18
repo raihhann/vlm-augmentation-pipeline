@@ -3,7 +3,8 @@
 
 AVAILABLE_MODELS = [
     "qwen3-vl:4b",
-    "llava-phi3"
+    "llava-phi3",
+    "mock"
 ]
 
 AVAILABLE_AUGMENTATIONS = [

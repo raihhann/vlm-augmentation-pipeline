@@ -3,46 +3,139 @@
 <head>
     <title>Multimodal VLM Evaluator</title>
     <link rel="stylesheet" href="/static/styles.css">
+    <style>
+        .tabs-nav {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #334155;
+            padding-bottom: 10px;
+        }
+        .tab-btn {
+            background: #334155;
+            color: #94a3b8;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .tab-btn:hover {
+            background: #475569;
+            color: #ffffff;
+        }
+        .tab-btn.active {
+            background: #2563eb;
+            color: #ffffff;
+            box-shadow: 0 0 10px rgba(37, 99, 235, 0.5);
+        }
+        .conditional-group {
+            display: block;
+            margin-bottom: 15px;
+        }
+        .hidden-element {
+            display: none !important;
+        }
+        .helper-text {
+            font-size: 12px;
+            color: #94a3b8;
+            margin-top: 4px;
+            display: block;
+        }
+        /* Styles for the dynamic per-image configuration cards */
+        .batch-image-config-card {
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 6px;
+            padding: 15px;
+            margin-top: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .batch-image-header {
+            font-weight: bold;
+            color: #38bdf8;
+            font-size: 14px;
+            border-bottom: 1px solid #1e293b;
+            padding-bottom: 6px;
+        }
+    </style>
 </head>
-<body class="dark" style="background-color: #1e293b; color: #ffffff; margin: 0; min-height: 100vh;">
+<body class="dark" style="background-color: #1e293b; color: #ffffff; margin: 0; min-height: 100vh; font-family: sans-serif;">
 
-<div class="center-container">
+<div class="center-container" style="max-width: 650px; margin: 0 auto; padding: 40px 20px;">
 
     <h1>Multimodal Model Evaluation</h1>
 
-    <div id="loading" style="display: none;">
-        <h2>Processing...</h2>
-        <div id="status">Initializing...</div>
+    <div class="tabs-nav">
+        <button type="button" class="tab-btn active" id="tab-image" onclick="switchProcessingMode('image')">📷 Batch Image Mode</button>
+        <button type="button" class="tab-btn" id="tab-video" onclick="switchProcessingMode('video')">🎬 Video Mode</button>
+    </div>
+
+    <div id="loading" style="display: none; text-align: center;" class="card">
+        <h2>Running Evaluation Matrix...</h2>
+        <div id="status" style="margin: 15px 0; color: #38bdf8; font-weight: bold;">Processing batch elements...</div>
         <div class="spinner"></div>
     </div>
 
     <form id="process-form" action="/process" method="post" enctype="multipart/form-data" class="card">
+        
+        <input type="hidden" name="processing_mode" id="processing_mode" value="image">
 
-        <label>Upload Media (Image / Video)</label>
-        <input type="file" name="file" required>
+        <label id="media-label">Select Source Images</label>
+        <input type="file" id="media-input" multiple required accept="image/*">
+        <span id="media-helper" class="helper-text">Select one or more images to evaluate.</span>
 
-        <label>Select Model</label>
-        <select name="model_name">
+        <label style="margin-top: 15px; display: block;">Select Architecture Vision-Language Backbone</label>
+        <select name="model_name" required>
             {% for model in models %}
             <option value="{{ model }}">{{ model }}</option>
             {% endfor %}
         </select>
 
-        <label>Select Augmentation</label>
-        <select name="augmentation_method">
-            {% for aug in augmentations %}
-            <option value="{{ aug }}">{{ aug }}</option>
-            {% endfor %}
-        </select>
+        <div id="image-transform-group" class="conditional-group">
+            <label>Select Augmentation Methods (Batch Matrix)</label>
+            <select name="augmentation_methods" multiple style="height: 120px;" required>
+                {% for aug in augmentations %}
+                <option value="{{ aug }}">{{ aug }}</option>
+                {% endfor %}
+            </select>
+            <span class="helper-text">Hold Ctrl (Windows) / Cmd (Mac) to select multiple augmentations.</span>
+        </div>
 
-        <label>Prompt</label>
-        <input type="text" name="prompt" required>
+        <div id="dynamic-pairwise-container" class="conditional-group">
+            </div>
 
-        <label>Ground Truth</label>
-        <input type="text" name="ground_truth" required>
+        <div id="video-sampling-group" class="conditional-group hidden-element">
+            <label>Select Temporal Keyframe Extraction Strategy</label>
+            <select name="video_sampling_method" id="video_sampling_method">
+                <option value="1">Method 1: Traditional Codec Baseline (I-Frame Extraction)</option>
+                <option value="2">Method 2: Unsupervised Spatial-Diversity Feature Selection (MaxInfo)</option>
+                <option value="3">Method 3: Sparse Optical Flow Tracking and Feature Velocity Gating</option>
+                <option value="4">Method 4: Latent Trajectory Space Partitioning and Deep Feature Distance</option>
+                <option value="5">Method 5: Query-Aware Semantic Token Gating (Q-Frame Framework)</option>
+                <option value="6">Method 6: Inference-Time Query-Frame Prioritization (BOLT Framework)</option>
+            </select>
 
-        <button type="submit" class="primary-btn">
-            Run Comparison
+            <label style="margin-top: 15px; display: block;">Select 2D Frame Augmentation Matrix</label>
+            <select name="augmentation_method_video">
+                {% for aug in augmentations %}
+                <option value="{{ aug }}">{{ aug }}</option>
+                {% endfor %}
+            </select>
+
+            <label style="margin-top: 15px; display: block;">Video Prompt / User Question</label>
+            <input type="text" id="video-prompt-field">
+
+            <label style="margin-top: 15px; display: block;">Video Ground Truth Answer</label>
+            <input type="text" id="video-gt-field">
+        </div>
+
+        <button type="submit" class="primary-btn" style="margin-top: 20px; width: 100%;">
+            Execute Evaluation Matrix
         </button>
 
     </form>
@@ -50,21 +143,123 @@
 </div>
 
 <script>
+/**
+ * Monitors the multi-file input field.
+ * Dynamically builds dedicated Prompt and Ground Truth fields for every chosen image.
+ */
+document.getElementById('media-input').addEventListener('change', function(e) {
+    const container = document.getElementById('dynamic-pairwise-container');
+    container.innerHTML = ""; // Clear out previous generation passes
+    
+    const files = e.target.files;
+    if (files.length === 0) return;
+
+    // Create a structured section header
+    const sectionTitle = document.createElement('h3');
+    sectionTitle.style.fontSize = '14px';
+    sectionTitle.style.marginTop = '20px';
+    sectionTitle.textContent = "🎯 Define Independent Targets for Selected Files:";
+    container.appendChild(sectionTitle);
+
+    // Loop through files and render inputs
+    for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        
+        const card = document.createElement('div');
+        card.className = 'batch-image-config-card';
+        card.innerHTML = `
+            <div class="batch-image-header">🖼️ File [${i + 1}]: ${file.name}</div>
+            
+            <label style="font-size:12px; margin:0;">Prompt / Question for this file:</label>
+            <input type="text" class="file-prompt-input" required placeholder="Type query for ${file.name}...">
+            
+            <label style="font-size:12px; margin:0;">Ground Truth Answer for this file:</label>
+            <input type="text" class="file-gt-input" required placeholder="Type ground truth answer...">
+        `;
+        container.appendChild(card);
+    }
+});
+
+function switchProcessingMode(mode) {
+    const isImage = (mode === 'image');
+    document.getElementById('tab-image').classList.toggle('active', isImage);
+    document.getElementById('tab-video').classList.toggle('active', !isImage);
+    document.getElementById('processing_mode').value = mode;
+    
+    const imgGroup = document.getElementById('image-transform-group');
+    const pairGroup = document.getElementById('dynamic-pairwise-container');
+    const vidGroup = document.getElementById('video-sampling-group');
+    const mediaLabel = document.getElementById('media-label');
+    const mediaInput = document.getElementById('media-input');
+    
+    if (isImage) {
+        imgGroup.classList.remove('hidden-element');
+        pairGroup.classList.remove('hidden-element');
+        vidGroup.classList.add('hidden-element');
+        mediaLabel.textContent = "Select Source Images";
+        mediaInput.setAttribute('accept', 'image/*');
+        mediaInput.setAttribute('multiple', 'multiple');
+        mediaInput.value = ""; // Flush states
+        pairGroup.innerHTML = "";
+    } else {
+        imgGroup.classList.add('hidden-element');
+        pairGroup.classList.add('hidden-element');
+        vidGroup.classList.remove('hidden-element');
+        mediaLabel.textContent = "Upload Source Video Stream (.mp4, .avi)";
+        mediaInput.removeAttribute('multiple');
+        mediaInput.setAttribute('accept', 'video/*');
+        mediaInput.value = "";
+    }
+}
+
+/**
+ * Intercepts form submit execution to serialize the dynamic paired matrix 
+ * arrays safely into standard multipart parameters before transmission.
+ */
 document.getElementById('process-form').addEventListener('submit', async function(e) {
     e.preventDefault();
-    
     const form = e.target;
-    const formData = new FormData(form);
+    const mode = document.getElementById('processing_mode').value;
     
+    // Construct a custom clean programmatic FormData object
+    const finalFormData = new FormData();
+    finalFormData.append('processing_mode', mode);
+    finalFormData.append('model_name', form.model_name.value);
+
+    if (mode === 'image') {
+        const fileInput = document.getElementById('media-input');
+        const promptFields = document.getElementsByClassName('file-prompt-input');
+        const gtFields = document.getElementsByClassName('file-gt-input');
+        
+        // Append global selected augmentation strategies strings array parameters
+        const augSelect = form.augmentation_methods;
+        for (let option of augSelect.options) {
+            if (option.selected) finalFormData.append('augmentation_methods', option.value);
+        }
+
+        // Loop through inputs and package them using index keys to match in backend loops
+        for (let i = 0; i < fileInput.files.length; i++) {
+            finalFormData.append('image_files', fileInput.files[i]);
+            finalFormData.append('image_prompts', promptFields[i].value);
+            finalFormData.append('image_ground_truths', gtFields[i].value);
+        }
+    } else {
+        // Video mode assignment tracks single references
+        const fileInput = document.getElementById('media-input');
+        if(fileInput.files.length > 0) finalFormData.append('file', fileInput.files[0]);
+        
+        finalFormData.append('video_sampling_method', form.video_sampling_method.value);
+        finalFormData.append('augmentation_method_video', form.augmentation_method_video.value);
+        finalFormData.append('prompt', document.getElementById('video-prompt-field').value);
+        finalFormData.append('ground_truth', document.getElementById('video-gt-field').value);
+    }
+
+    // Toggle workspace visibility animations loaders
     form.style.display = 'none';
     document.getElementById('loading').style.display = 'block';
     
     try {
-        const response = await fetch('/process', {
-            method: 'POST',
-            body: formData
-        });
-        
+        const response = await fetch('/process', { method: 'POST', body: finalFormData });
         const reader = response.body.getReader();
         const decoder = new TextDecoder();
         let buffer = '';
@@ -82,45 +277,35 @@ document.getElementById('process-form').addEventListener('submit', async functio
             for (const line of lines) {
                 if (line.startsWith('data: ')) {
                     const data = line.slice(6).trim();
-
-                    // 1. Check for errors
                     if (data.startsWith('ERROR:')) {
                         alert(data);
                         location.reload();
                         return;
                     }
-
-                    // 2. Start collecting HTML once DONE is hit
                     if (data === 'DONE') {
                         isCollectingHtml = true;
                         continue;
                     }
-
                     if (isCollectingHtml) {
-                        // Append every line after DONE to our HTML string
                         fullHtml += data + '\n';
                     } else {
-                        // Update the status text for messages before the end
                         document.getElementById('status').textContent = data;
                     }
                 }
             }
         }
 
-        // After the stream ends, if we have HTML, render it
         if (fullHtml.trim().length > 0) {
             document.open();
             document.write(fullHtml);
             document.close();
         }
-
     } catch (error) {
         console.error('Error:', error);
-        alert('An error occurred. Please try again.');
+        alert('An unexpected server error occurred.');
         location.reload();
     }
 });
 </script>
-
 </body>
 </html>

@@ -5,6 +5,31 @@ from PIL import Image
 def run_inference(model: str, image_input, prompt: str, type: str) -> str:
     print(f"Running inference with model: {model}, type: {type}")
     
+    # ==========================================
+    # 🧪 MOCK TEST FALLBACK SUBORDINATOR
+    # ==========================================
+    if str(model).lower().startswith("mock"):
+        import random
+        # Simulate processing time to match web app loading spinners
+        import time
+        time.sleep(0.5)
+        
+        mock_scenarios = [
+            f"[MOCK VLM RESPONSE ({type.upper()} MODE)]\n"
+            f"Analysis of the tracking sequence relative to prompt: '{prompt}'.\n"
+            f"The model successfully isolated the focal object moving across the frame bounding zones. "
+            f"The subject maintains a stable vector trajectory despite localized lighting noise.",
+            
+            f"[MOCK VLM RESPONSE ({type.upper()} MODE)]\n"
+            f"The vision system reports high structural matching confidence for the target object. "
+            f"Temporal redundancy filtering has eliminated background drift artifacts, leaving "
+            f"clear semantic observations."
+        ]
+        return random.choice(mock_scenarios)
+        
+    # ==========================================
+    # 📷 STANDARD LIVE INFERENCE PIPELINE
+    # ==========================================
     # 1. Define the Universal System Instruction
     system_instruction = (
         "You are a specialized vision analysis system. Inputs are a vertical composite of two frames. "
@@ -15,7 +40,6 @@ def run_inference(model: str, image_input, prompt: str, type: str) -> str:
     )
 
     # 2. Handle Image Input (Ensure we have a path or bytes)
-    # If the user passed a PIL object, save it to a temp file to ensure clean transfer
     path_to_send = image_input
     if isinstance(image_input, Image.Image):
         path_to_send = "temp_inference_image.jpg"
