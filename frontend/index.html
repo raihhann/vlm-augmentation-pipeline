@@ -1,116 +1,304 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Multimodal VLM Evaluator</title>
-    <link rel="stylesheet" href="/static/styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multimodal VLM Evaluator Engine</title>
     <style>
+        /* Modern 2026 Design Token Variables */
+        :root {
+            --bg-main: #0b0f19;
+            --bg-card: rgba(17, 24, 39, 0.7);
+            --border-glow: rgba(51, 65, 85, 0.5);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            
+            /* Neon Glow Color Tracks */
+            --clr-image: #06b6d4;
+            --clr-image-glow: rgba(6, 182, 212, 0.25);
+            --clr-video: #a855f7;
+            --clr-video-glow: rgba(168, 85, 247, 0.25);
+            --clr-action: #10b981;
+            --clr-action-glow: rgba(16, 185, 129, 0.3);
+        }
+
+        /* Base Resets & Typography */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 20px;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(6, 182, 212, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(168, 85, 247, 0.06) 0%, transparent 45%);
+        }
+
+        .engine-container {
+            width: 100%;
+            max-width: 700px;
+            z-index: 10;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 25px;
+            letter-spacing: -0.03em;
+            background: linear-gradient(135deg, #fff 30%, var(--text-muted) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Glassmorphic Cards */
+        .glass-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        /* 2026 Navigation Tabs */
         .tabs-nav {
             display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            border-bottom: 2px solid #334155;
-            padding-bottom: 10px;
+            background: rgba(15, 23, 42, 0.6);
+            padding: 6px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
+
         .tab-btn {
-            background: #334155;
-            color: #94a3b8;
+            flex: 1;
+            background: transparent;
+            color: var(--text-muted);
             border: none;
-            padding: 10px 20px;
-            font-size: 16px;
-            font-weight: bold;
-            border-radius: 6px;
+            padding: 12px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            border-radius: 8px;
             cursor: pointer;
-            transition: all 0.2s ease;
-        }
-        .tab-btn:hover {
-            background: #475569;
-            color: #ffffff;
-        }
-        .tab-btn.active {
-            background: #2563eb;
-            color: #ffffff;
-            box-shadow: 0 0 10px rgba(37, 99, 235, 0.5);
-        }
-        .conditional-group {
-            display: block;
-            margin-bottom: 15px;
-        }
-        .hidden-element {
-            display: none !important;
-        }
-        .helper-text {
-            font-size: 12px;
-            color: #94a3b8;
-            margin-top: 4px;
-            display: block;
-        }
-        /* Styles for the dynamic per-image configuration cards */
-        .batch-image-config-card {
-            background: #0f172a;
-            border: 1px solid #334155;
-            border-radius: 6px;
-            padding: 15px;
-            margin-top: 12px;
             display: flex;
-            flex-direction: column;
-            gap: 10px;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
+
+        .tab-btn:hover {
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .tab-btn.active-img {
+            background: rgba(6, 182, 212, 0.15);
+            color: var(--clr-image);
+            border: 1px solid rgba(6, 182, 212, 0.3);
+            box-shadow: 0 0 15px var(--clr-image-glow);
+        }
+
+        .tab-btn.active-vid {
+            background: rgba(168, 85, 247, 0.15);
+            color: var(--clr-video);
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            box-shadow: 0 0 15px var(--clr-video-glow);
+        }
+
+        /* Modern Form Layout Elements */
+        label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        input[type="text"], select {
+            width: 100%;
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 12px 16px;
+            color: var(--text-main);
+            font-size: 0.95rem;
+            outline: none;
+        }
+
+        input[type="text"]:focus, select:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+        }
+
+        /* File Upload Interface Area */
+        .file-upload-zone {
+            position: relative;
+            border: 2px dashed rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+            background: rgba(15, 23, 42, 0.3);
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+
+        .file-upload-zone:hover {
+            border-color: #3b82f6;
+            background: rgba(59, 130, 246, 0.02);
+        }
+
+        .file-upload-zone input[type="file"] {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        /* Dynamic Configurations Matrix Cards */
+        .matrix-section-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin: 25px 0 10px 0;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .batch-image-config-card {
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 10px;
+            padding: 16px;
+            margin-top: 12px;
+            animation: slideIn 0.3s ease forwards;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         .batch-image-header {
-            font-weight: bold;
-            color: #38bdf8;
-            font-size: 14px;
-            border-bottom: 1px solid #1e293b;
-            padding-bottom: 6px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--clr-image);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
+
+        /* Master Matrix Button Trigger */
+        .primary-btn {
+            width: 100%;
+            background: linear-gradient(135deg, var(--clr-action) 0%, #059669 100%);
+            color: white;
+            border: none;
+            padding: 14px;
+            font-size: 1rem;
+            font-weight: 700;
+            border-radius: 10px;
+            cursor: pointer;
+            box-shadow: 0 4px 20px var(--clr-action-glow);
+            margin-top: 25px;
+        }
+
+        .primary-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px var(--clr-action-glow);
+        }
+
+        .primary-btn:active { transform: translateY(0); }
+
+        /* Asynchronous Streaming Telemetry Spiders */
+        #loading {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(255, 255, 255, 0.05);
+            border-radius: 50%;
+            border-top-color: #3b82f6;
+            margin: 20px auto 0 auto;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin { to { transform: rotate(300deg); } }
+
+        .helper-text { font-size: 0.78rem; color: var(--text-muted); margin-top: 6px; }
+        .conditional-group { margin-bottom: 20px; }
+        .hidden-element { display: none !important; }
     </style>
 </head>
-<body class="dark" style="background-color: #1e293b; color: #ffffff; margin: 0; min-height: 100vh; font-family: sans-serif;">
+<body>
 
-<div class="center-container" style="max-width: 650px; margin: 0 auto; padding: 40px 20px;">
+<div class="engine-container">
 
-    <h1>Multimodal Model Evaluation</h1>
+    <h1>VLM Evaluation Studio</h1>
 
     <div class="tabs-nav">
-        <button type="button" class="tab-btn active" id="tab-image" onclick="switchProcessingMode('image')">📷 Batch Image Mode</button>
-        <button type="button" class="tab-btn" id="tab-video" onclick="switchProcessingMode('video')">🎬 Video Mode</button>
+        <button type="button" class="tab-btn active-img" id="tab-image" onclick="switchProcessingMode('image')">📷 Batch Image Matrix</button>
+        <button type="button" class="tab-btn" id="tab-video" onclick="switchProcessingMode('video')">🎬 Video Gating Node</button>
     </div>
 
-    <div id="loading" style="display: none; text-align: center;" class="card">
-        <h2>Running Evaluation Matrix...</h2>
-        <div id="status" style="margin: 15px 0; color: #38bdf8; font-weight: bold;">Processing batch elements...</div>
+    <div id="loading" class="glass-card" style="display: none;">
+        <h2 style="font-size: 1.4rem; font-weight: 700; margin-bottom: 8px;">Processing Pipeline Matrix</h2>
+        <div id="status" style="color: var(--clr-image); font-weight: 600; font-size: 0.95rem;">Initializing batch elements...</div>
         <div class="spinner"></div>
     </div>
 
-    <form id="process-form" action="/process" method="post" enctype="multipart/form-data" class="card">
+    <form id="process-form" action="/process" method="post" enctype="multipart/form-data" class="glass-card">
         
         <input type="hidden" name="processing_mode" id="processing_mode" value="image">
 
-        <label id="media-label">Select Source Images</label>
-        <input type="file" id="media-input" multiple required accept="image/*">
-        <span id="media-helper" class="helper-text">Select one or more images to evaluate.</span>
-
-        <label style="margin-top: 15px; display: block;">Select Architecture Vision-Language Backbone</label>
-        <select name="model_name" required>
-            {% for model in models %}
-            <option value="{{ model }}">{{ model }}</option>
-            {% endfor %}
-        </select>
-
-        <div id="image-transform-group" class="conditional-group">
-            <label>Select Augmentation Methods (Batch Matrix)</label>
-            <select name="augmentation_methods" multiple style="height: 120px;" required>
-                {% for aug in augmentations %}
-                <option value="{{ aug }}">{{ aug }}</option>
-                {% endfor %}
-            </select>
-            <span class="helper-text">Hold Ctrl (Windows) / Cmd (Mac) to select multiple augmentations.</span>
+        <div class="file-upload-zone">
+            <span id="media-label" style="font-weight: 600; font-size: 1rem; color: var(--text-main); display: block;">Drop files here or click to browse</span>
+            <span id="media-helper" class="helper-text">Supports bulk multi-image uploading streams</span>
+            <input type="file" id="media-input" multiple required accept="image/*">
         </div>
 
-        <div id="dynamic-pairwise-container" class="conditional-group">
-            </div>
+        <div class="conditional-group">
+            <label>Vision-Language Foundation Model</label>
+            <select name="model_name" required>
+                {% for model in models %}
+                <option value="{{ model }}">{{ model }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div id="image-transform-group" class="conditional-group">
+            <label>Global Augmentation Operators</label>
+            <select name="augmentation_methods" multiple style="height: 140px; font-family: monospace;" required>
+                {% for aug in augmentations %}
+                <option value="{{ aug }}">⚡ {{ aug }}</option>
+                {% endfor %}
+            </select>
+            <span class="helper-text">Hold Ctrl / Cmd to benchmark multiple variations at once</span>
+        </div>
+
+        <div id="dynamic-pairwise-container" class="conditional-group"></div>
 
         <div id="video-sampling-group" class="conditional-group hidden-element">
-            <label>Select Temporal Keyframe Extraction Strategy</label>
+            <label>Temporal Keyframe Extraction Strategy</label>
             <select name="video_sampling_method" id="video_sampling_method">
                 <option value="1">Method 1: Traditional Codec Baseline (I-Frame Extraction)</option>
                 <option value="2">Method 2: Unsupervised Spatial-Diversity Feature Selection (MaxInfo)</option>
@@ -120,22 +308,22 @@
                 <option value="6">Method 6: Inference-Time Query-Frame Prioritization (BOLT Framework)</option>
             </select>
 
-            <label style="margin-top: 15px; display: block;">Select 2D Frame Augmentation Matrix</label>
+            <label style="margin-top: 16px;">2D Frame Modification Filter</label>
             <select name="augmentation_method_video">
                 {% for aug in augmentations %}
                 <option value="{{ aug }}">{{ aug }}</option>
                 {% endfor %}
             </select>
 
-            <label style="margin-top: 15px; display: block;">Video Prompt / User Question</label>
-            <input type="text" id="video-prompt-field">
+            <label style="margin-top: 16px;">Video prompt / Evaluation query</label>
+            <input type="text" id="video-prompt-field" placeholder="e.g., Identify the action or item coordinates...">
 
-            <label style="margin-top: 15px; display: block;">Video Ground Truth Answer</label>
-            <input type="text" id="video-gt-field">
+            <label style="margin-top: 16px;">Expected Ground Truth Reference</label>
+            <input type="text" id="video-gt-field" placeholder="Type verified correct baseline response...">
         </div>
 
-        <button type="submit" class="primary-btn" style="margin-top: 20px; width: 100%;">
-            Execute Evaluation Matrix
+        <button type="submit" class="primary-btn">
+            Execute Pipeline Matrix
         </button>
 
     </form>
@@ -144,37 +332,35 @@
 
 <script>
 /**
- * Monitors the multi-file input field.
- * Dynamically builds dedicated Prompt and Ground Truth fields for every chosen image.
+ * Monitors the file upload zone.
+ * Generates an automated form matrix block for each uploaded item.
  */
 document.getElementById('media-input').addEventListener('change', function(e) {
     const container = document.getElementById('dynamic-pairwise-container');
-    container.innerHTML = ""; // Clear out previous generation passes
+    container.innerHTML = "";
     
     const files = e.target.files;
     if (files.length === 0) return;
 
-    // Create a structured section header
-    const sectionTitle = document.createElement('h3');
-    sectionTitle.style.fontSize = '14px';
-    sectionTitle.style.marginTop = '20px';
-    sectionTitle.textContent = "🎯 Define Independent Targets for Selected Files:";
-    container.appendChild(sectionTitle);
+    const titleBlock = document.createElement('div');
+    titleBlock.className = 'matrix-section-title';
+    titleBlock.innerHTML = '⚙️ Configure Independent Query Matrix targets';
+    container.appendChild(titleBlock);
 
-    // Loop through files and render inputs
     for (let i = 0; i < files.length; i++) {
         const file = files[i];
-        
         const card = document.createElement('div');
         card.className = 'batch-image-config-card';
         card.innerHTML = `
-            <div class="batch-image-header">🖼️ File [${i + 1}]: ${file.name}</div>
-            
-            <label style="font-size:12px; margin:0;">Prompt / Question for this file:</label>
-            <input type="text" class="file-prompt-input" required placeholder="Type query for ${file.name}...">
-            
-            <label style="font-size:12px; margin:0;">Ground Truth Answer for this file:</label>
-            <input type="text" class="file-gt-input" required placeholder="Type ground truth answer...">
+            <div class="batch-image-header">🖼️ Node [${i + 1}]: ${file.name}</div>
+            <div style="margin-bottom:10px;">
+                <label style="font-size:0.75rem; color:var(--text-muted);">Evaluation Query Prompt</label>
+                <input type="text" class="file-prompt-input" required placeholder="What should VLM look for in ${file.name}?">
+            </div>
+            <div>
+                <label style="font-size:0.75rem; color:var(--text-muted);">Ground Truth Reference</label>
+                <input type="text" class="file-gt-input" required placeholder="Type accurate target answer...">
+            </div>
         `;
         container.appendChild(card);
     }
@@ -182,8 +368,12 @@ document.getElementById('media-input').addEventListener('change', function(e) {
 
 function switchProcessingMode(mode) {
     const isImage = (mode === 'image');
-    document.getElementById('tab-image').classList.toggle('active', isImage);
-    document.getElementById('tab-video').classList.toggle('active', !isImage);
+    
+    const imgBtn = document.getElementById('tab-image');
+    const vidBtn = document.getElementById('tab-video');
+    imgBtn.className = 'tab-btn' + (isImage ? ' active-img' : '');
+    vidBtn.className = 'tab-btn' + (!isImage ? ' active-vid' : '');
+    
     document.getElementById('processing_mode').value = mode;
     
     const imgGroup = document.getElementById('image-transform-group');
@@ -191,38 +381,38 @@ function switchProcessingMode(mode) {
     const vidGroup = document.getElementById('video-sampling-group');
     const mediaLabel = document.getElementById('media-label');
     const mediaInput = document.getElementById('media-input');
+    const mediaHelper = document.getElementById('media-helper');
     
     if (isImage) {
         imgGroup.classList.remove('hidden-element');
         pairGroup.classList.remove('hidden-element');
         vidGroup.classList.add('hidden-element');
-        mediaLabel.textContent = "Select Source Images";
-        mediaInput.setAttribute('accept', 'image/*');
+        mediaLabel.textContent = "Drop batch images here or click to browse";
+        mediaInput.setAttribute('name', 'files');
         mediaInput.setAttribute('multiple', 'multiple');
-        mediaInput.value = ""; // Flush states
+        mediaInput.setAttribute('accept', 'image/*');
+        mediaInput.value = "";
         pairGroup.innerHTML = "";
+        document.getElementById('status').style.color = 'var(--clr-image)';
     } else {
         imgGroup.classList.add('hidden-element');
         pairGroup.classList.add('hidden-element');
         vidGroup.classList.remove('hidden-element');
-        mediaLabel.textContent = "Upload Source Video Stream (.mp4, .avi)";
+        mediaLabel.textContent = "Drop video clip here or click to browse (.mp4, .avi)";
+        mediaInput.setAttribute('name', 'file');
         mediaInput.removeAttribute('multiple');
         mediaInput.setAttribute('accept', 'video/*');
         mediaInput.value = "";
+        document.getElementById('status').style.color = 'var(--clr-video)';
     }
 }
 
-/**
- * Intercepts form submit execution to serialize the dynamic paired matrix 
- * arrays safely into standard multipart parameters before transmission.
- */
 document.getElementById('process-form').addEventListener('submit', async function(e) {
     e.preventDefault();
     const form = e.target;
     const mode = document.getElementById('processing_mode').value;
-    
-    // Construct a custom clean programmatic FormData object
     const finalFormData = new FormData();
+    
     finalFormData.append('processing_mode', mode);
     finalFormData.append('model_name', form.model_name.value);
 
@@ -231,20 +421,17 @@ document.getElementById('process-form').addEventListener('submit', async functio
         const promptFields = document.getElementsByClassName('file-prompt-input');
         const gtFields = document.getElementsByClassName('file-gt-input');
         
-        // Append global selected augmentation strategies strings array parameters
         const augSelect = form.augmentation_methods;
         for (let option of augSelect.options) {
             if (option.selected) finalFormData.append('augmentation_methods', option.value);
         }
 
-        // Loop through inputs and package them using index keys to match in backend loops
         for (let i = 0; i < fileInput.files.length; i++) {
             finalFormData.append('image_files', fileInput.files[i]);
             finalFormData.append('image_prompts', promptFields[i].value);
             finalFormData.append('image_ground_truths', gtFields[i].value);
         }
     } else {
-        // Video mode assignment tracks single references
         const fileInput = document.getElementById('media-input');
         if(fileInput.files.length > 0) finalFormData.append('file', fileInput.files[0]);
         
@@ -254,7 +441,6 @@ document.getElementById('process-form').addEventListener('submit', async functio
         finalFormData.append('ground_truth', document.getElementById('video-gt-field').value);
     }
 
-    // Toggle workspace visibility animations loaders
     form.style.display = 'none';
     document.getElementById('loading').style.display = 'block';
     
@@ -302,9 +488,13 @@ document.getElementById('process-form').addEventListener('submit', async functio
         }
     } catch (error) {
         console.error('Error:', error);
-        alert('An unexpected server error occurred.');
+        alert('Server failure executing task.');
         location.reload();
     }
+});
+
+window.addEventListener('DOMContentLoaded', () => {
+    switchProcessingMode('image');
 });
 </script>
 </body>

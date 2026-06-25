@@ -1,194 +1,353 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Evaluation Matrix Dashboard</title>
-    <link rel="stylesheet" href="/static/styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evaluation Matrix Studio Dashboard</title>
     <style>
-        .matrix-layout { 
-            display: flex; 
-            gap: 20px; 
-            padding: 20px; 
-            max-width: 1600px; 
-            margin: 0 auto; 
+        /* Modern 2026 Style Tokens */
+        :root {
+            --bg-main: #060913;
+            --bg-card: rgba(15, 23, 42, 0.65);
+            --border-glow: rgba(255, 255, 255, 0.08);
+            --text-main: #f8fafc;
+            --text-muted: #64748b;
+            
+            /* Neon Glow Color Tracks */
+            --clr-cyan: #06b6d4;
+            --clr-cyan-glow: rgba(6, 182, 212, 0.2);
+            --clr-purple: #a855f7;
+            --clr-purple-glow: rgba(168, 85, 247, 0.2);
+            --clr-emerald: #10b981;
+            --clr-emerald-glow: rgba(16, 185, 129, 0.25);
+            --clr-rose: #f43f5e;
         }
-        .sidebar-tabs { 
-            flex: 0 0 320px; 
-            background: #1e293b; 
-            padding: 15px; 
-            border-radius: 8px; 
-            border: 1px solid #334155; 
-            height: fit-content; 
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .matrix-cell-btn { 
-            width: 100%; 
-            text-align: left; 
-            background: #0f172a; 
-            color: #94a3b8; 
-            border: 1px solid #334155; 
-            padding: 12px; 
-            margin-bottom: 8px; 
-            border-radius: 6px; 
-            cursor: pointer; 
-            font-size: 13px; 
-            transition: all 0.2s ease; 
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            font-family: system-ui, -apple-system, sans-serif;
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(circle at 50% 0%, rgba(59, 130, 246, 0.04) 0%, transparent 50%),
+                radial-gradient(circle at 100% 100%, rgba(168, 85, 247, 0.04) 0%, transparent 50%);
         }
-        .matrix-cell-btn:hover { 
-            background: #1e293b; 
-            color: #ffffff; 
+
+        .matrix-layout {
+            display: flex;
+            gap: 24px;
+            padding: 24px;
+            max-width: 1650px;
+            margin: 0 auto;
+            height: 100vh;
         }
-        .matrix-cell-btn.active-run { 
-            background: #2563eb; 
-            color: #ffffff; 
-            border-color: #3b82f6; 
-            font-weight: bold; 
+
+        /* Glassmorphic Cards & Panes */
+        .glass-pane {
+            background: var(--bg-card);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--border-glow);
+            border-radius: 16px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4);
+            display: flex;
+            flex-direction: column;
         }
-        .workspace-view { 
-            flex: 1; 
-            min-width: 0; 
-            display: flex; 
-            gap: 20px; 
+
+        /* Sidebar Matrix List Navigation */
+        .sidebar-tabs {
+            flex: 0 0 340px;
+            padding: 20px;
         }
-        .frame-gallery-container { 
-            margin-top: 15px; 
-            background: #0f172a; 
-            padding: 12px; 
-            border-radius: 8px; 
-            border: 1px solid #334155; 
+
+        .sidebar-header {
+            font-size: 1.1rem;
+            font-weight: 800;
+            padding-bottom: 12px;
+            margin-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            letter-spacing: -0.02em;
         }
-        .frame-strip { 
-            display: flex; 
-            gap: 10px; 
-            overflow-x: auto; 
-            padding-bottom: 5px; 
+
+        .runs-scroll-area {
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 4px;
         }
-        .frame-thumb-wrapper { 
-            flex: 0 0 100px; 
-            cursor: pointer; 
-            text-align: center; 
-            border: 2px solid transparent; 
-            border-radius: 4px; 
-            overflow: hidden; 
-            background: #1e293b; 
+
+        /* Custom Modern Scrollbars */
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.2); }
+
+        .matrix-cell-btn {
+            width: 100%;
+            background: rgba(15, 23, 42, 0.6);
+            color: var(--text-muted);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 14px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            cursor: pointer;
+            text-align: left;
+            font-size: 0.85rem;
+            line-height: 1.4;
         }
-        .frame-thumb-wrapper.active-thumb { 
-            border-color: #2563eb; 
+
+        .matrix-cell-btn:hover {
+            background: rgba(255, 255, 255, 0.02);
+            color: var(--text-main);
+            border-color: rgba(255, 255, 255, 0.15);
         }
-        .frame-thumb { 
-            width: 100%; 
-            height: 60px; 
-            object-fit: cover; 
-            display: block; 
+
+        .matrix-cell-btn.active-run {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--text-main);
+            border-color: rgba(59, 130, 246, 0.4);
+            box-shadow: inset 0 0 12px rgba(59, 130, 246, 0.15);
         }
-        .hidden-layout { 
-            display: none !important; 
+
+        /* Workspace Core Splits */
+        .workspace-view {
+            flex: 1;
+            display: flex;
+            gap: 24px;
         }
-        .action-button-group { 
-            display: flex; 
-            gap: 12px; 
-            margin-top: 15px; 
+
+        .canvas-panel {
+            flex: 1.1;
+            padding: 24px;
         }
-        .reset-btn { 
-            background: #475569; 
-            color: #ffffff; 
-            padding: 12px; 
-            border-radius: 6px; 
-            border: none; 
-            cursor: pointer; 
-            flex: 1; 
-            font-weight: bold; 
+
+        .metrics-panel {
+            flex: 1;
+            padding: 24px;
+            overflow-y: auto;
         }
-        .download-btn-flex { 
-            background: #10b981; 
-            color: #ffffff; 
-            padding: 12px; 
-            border-radius: 6px; 
-            text-decoration: none; 
-            text-align: center; 
-            font-weight: bold; 
-            flex: 2; 
+
+        /* 3-Button Structural Navigation Deck Selector */
+        .media-toggle {
+            display: flex;
+            background: rgba(15, 23, 42, 0.8);
+            padding: 4px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            gap: 4px;
         }
+
+        .toggle-btn {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            padding: 10px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .toggle-btn:hover { color: #fff; }
+
+        .toggle-btn.active {
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--text-main);
+            font-weight: 700;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        /* Media Screen Display Window */
+        .media-viewer-frame {
+            width: 100%;
+            height: 420px;
+            background: #090d16;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .media-viewer-frame img, .media-viewer-frame video {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        /* Video Frame Storyboard Galleries */
+        .frame-gallery-container {
+            margin-top: 20px;
+            background: rgba(9, 13, 22, 0.6);
+            padding: 14px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .frame-strip {
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            padding-bottom: 6px;
+            margin-top: 8px;
+        }
+
+        .frame-thumb-wrapper {
+            flex: 0 0 105px;
+            cursor: pointer;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 2px solid transparent;
+            background: #090d16;
+        }
+
+        .frame-thumb-wrapper.active-thumb {
+            border-color: var(--clr-cyan);
+            box-shadow: 0 0 10px var(--clr-cyan-glow);
+        }
+
+        .frame-thumb { width: 100%; height: 60px; object-fit: cover; display: block; }
+        .frame-meta { font-size: 10px; text-align: center; padding: 4px; color: var(--text-muted); background: rgba(0,0,0,0.2); }
+
+        /* Text Response Display Inboxes */
+        h4 { font-size: 0.88rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: 8px; }
+        
+        textarea {
+            width: 100%; height: 100px;
+            background: rgba(9, 13, 22, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            color: var(--text-main);
+            border-radius: 10px;
+            padding: 12px;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            resize: none;
+            outline: none;
+            margin-bottom: 15px;
+        }
+
+        /* Metrics Data Item Boxes */
+        .metric-grid { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
+        
+        .metric-row {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            font-size: 0.9rem;
+        }
+
+        .metric-row span:first-child { color: var(--text-muted); font-weight: 500; }
+        .metric-row span:last-child { color: var(--text-main); font-weight: 600; }
+
+        /* Structural Global Action Row Group Controls */
+        .action-button-group { display: flex; gap: 12px; margin-top: 20px; }
+        
+        .reset-btn {
+            background: rgba(255, 255, 255, 0.05);
+            color: white; border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 14px; border-radius: 10px; font-weight: 700; cursor: pointer; flex: 1;
+        }
+        .reset-btn:hover { background: rgba(255, 255, 255, 0.08); }
+
+        .download-btn-flex {
+            background: linear-gradient(135deg, var(--clr-emerald) 0%, #059669 100%);
+            color: white; padding: 14px; border-radius: 10px; font-weight: 700; text-decoration: none;
+            text-align: center; flex: 2; box-shadow: 0 4px 15px var(--clr-emerald-glow);
+        }
+        .download-btn-flex:hover { transform: translateY(-1px); box-shadow: 0 6px 20px var(--clr-emerald-glow); }
+
+        .hidden-layout { display: none !important; }
     </style>
 </head>
-<body class="dark" style="background-color: #0f172a; color: #ffffff; margin: 0; min-height: 100vh; font-family: sans-serif;">
+<body>
 
 <div class="matrix-layout">
 
-    <div class="sidebar-tabs">
-        <h3 style="margin-top:0; border-bottom:1px solid #334155; padding-bottom:10px; font-size:16px;">📊 Evaluation Grid Matrix</h3>
-        <div id="runs-list-anchor">
+    <div class="sidebar-tabs glass-pane">
+        <div class="sidebar-header">📊 Evaluation Grid Matrix</div>
+        <div class="runs-scroll-area" id="runs-list-anchor">
             {% for run in dataset_matrix %}
-            <button type="button" class="matrix-cell-btn {% if loop.first %}active-run{% endif %}" 
-                    onclick="loadTargetMatrixRunCell(this, {{ run | tojson | forceescape }})">
-                <strong>📄 File:</strong> {{ run.file_name }}<br>
-                <span style="color:#38bdf8;">⚡ Method: {{ run.variant_method }}</span>
+            <button type="button" 
+                    class="matrix-cell-btn {% if loop.first %}active-run{% endif %}" 
+                    data-matrix-run='{{ run | tojson }}'
+                    onclick="handleSidebarClick(this)">
+                <span style="color: var(--text-main); font-weight: 700; font-size: 0.88rem; display: block; margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">📄 {{ run.file_name }}</span>
+                <span style="color: var(--clr-cyan); font-weight: 600; font-size: 0.78rem;">⚡ {{ run.variant_method }}</span>
             </button>
             {% endfor %}
         </div>
         
         <div class="action-button-group">
             <button type="button" class="reset-btn" onclick="window.location.href='/'">🔄 Restart</button>
-            <a href="/download_metrics?session_token={{ session_token }}" class="download-btn-flex">📥 Export Excel (.xlsx)</a>
+            <a href="/download_metrics?session_token={{ session_token }}" class="download-btn-flex">📥 Export Excel</a>
         </div>
     </div>
 
     <div class="workspace-view" id="matrix-workspace-container">
         
-        <div style="flex: 1; background: #1e293b; padding: 20px; border-radius: 8px; border: 1px solid #334155; height: fit-content;">
-            <h3>Media Canvas</h3>
-            <div class="media-toggle" style="display: flex; gap: 10px; margin-bottom: 15px;">
+        <div class="canvas-panel glass-pane">
+            <div class="media-toggle">
                 <button id="show-original" class="toggle-btn active" onclick="toggleDisplayCanvasView('original')">Original Input</button>
-                <button id="show-processed" class="toggle-btn" onclick="toggleDisplayCanvasView('processed')">Transformed Target</button>
+                <button id="show-extracted" class="toggle-btn" onclick="toggleDisplayCanvasView('extracted')">Extracted Frames</button>
+                <button id="show-augmented" class="toggle-btn" onclick="toggleDisplayCanvasView('augmented')">Augmented Frames</button>
             </div>
 
-            <div style="width:100%; background:#0f172a; border-radius:6px; min-height:300px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
-                <img id="main-view-image" src="" style="max-width:100%; max-height:450px; object-fit:contain;">
-                <video id="main-view-video" controls style="max-width:100%; max-height:450px;" class="hidden-layout"></video>
+            <div class="media-viewer-frame">
+                <img id="main-view-image" src="" alt="Evaluation Target">
+                <video id="main-view-video" controls class="hidden-layout"></video>
             </div>
 
             <div id="dashboard-video-gallery" class="frame-gallery-container hidden-layout">
-                <div style="font-size:12px; color:#94a3b8; margin-bottom:8px; font-weight:bold; text-transform:uppercase;">Extracted Keyframe Strip</div>
+                <h4 id="gallery-title-text" style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase;">Extracted Timeline Nodes</h4>
                 <div class="frame-strip" id="gallery-strip-anchor"></div>
             </div>
         </div>
 
-        <div style="flex: 1.2; display: flex; flex-direction: column; gap: 15px;">
-            <div>
-                <h4>Baseline Model Text Output</h4>
-                <textarea id="box-original-output" readonly style="width:100%; height:90px; background:#0f172a; color:#fff; border:1px solid #334155; padding:10px; border-radius:6px; resize:none;"></textarea>
-            </div>
-            <div>
-                <h4>Evaluated Framework Text Output</h4>
-                <textarea id="box-processed-output" readonly style="width:100%; height:90px; background:#0f172a; color:#fff; border:1px solid #334155; padding:10px; border-radius:6px; resize:none;"></textarea>
-            </div>
+        <div class="metrics-panel glass-pane">
+            <h4>Baseline Model Output</h4>
+            <textarea id="box-original-output" readonly></textarea>
 
-            <div style="background:#1e293b; padding:20px; border-radius:8px; border:1px solid #334155;">
-                <h4 style="margin-top:0;">Metric Performance Parameters</h4>
-                <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #334155;">
-                    <span>Original Reference Latency</span><span id="metric-t-orig" style="color:#38bdf8; font-weight:bold;">-</span>
+            <h4 style="color: var(--clr-cyan);">Evaluated Run Output</h4>
+            <textarea id="box-processed-output" readonly></textarea>
+
+            <h4 style="margin-bottom: 4px;">Metric Performance Matrix</h4>
+            <div class="metric-grid">
+                <div class="metric-row">
+                    <span>Original Baseline Latency</span><span id="metric-t-orig" style="color: var(--clr-cyan);">-</span>
                 </div>
-                <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #334155;">
-                    <span>Evaluated Run Latency</span><span id="metric-t-proc" style="color:#38bdf8; font-weight:bold;">-</span>
+                <div class="metric-row">
+                    <span>Evaluated Run Latency</span><span id="metric-t-proc" style="color: var(--clr-cyan);">-</span>
                 </div>
-                <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #334155;">
-                    <span>Latency Delta Difference</span><span id="metric-t-diff" style="color:#4ade80; font-weight:bold;">-</span>
+                <div class="metric-row">
+                    <span>Latency Delta Difference</span><span id="metric-t-diff" style="color: var(--clr-emerald);">-</span>
                 </div>
-                <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #334155;">
+                <div class="metric-row">
                     <span>Original Output BERTScore</span><span id="metric-b-orig">-</span>
                 </div>
-                <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #334155;">
+                <div class="metric-row">
                     <span>Original Output BLEU Score</span><span id="metric-bl-orig">-</span>
                 </div>
-                <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #334155;">
+                <div class="metric-row">
                     <span>Evaluated Run BERTScore</span><span id="metric-b-proc">-</span>
                 </div>
-                <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #334155;">
+                <div class="metric-row">
                     <span>Evaluated Run BLEU Score</span><span id="metric-bl-proc">-</span>
                 </div>
-                <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #334155;">
-                    <span>Baseline Input Token Footprint</span><span id="metric-tok-orig">-</span>
+                <div class="metric-row">
+                    <span>Baseline Token Footprint</span><span id="metric-tok-orig">-</span>
                 </div>
-                <div style="display:flex; justify-content:space-between; padding:6px 0;">
-                    <span>Evaluated Run Token Footprint</span><span id="metric-tok-proc" style="color:#f43f5e; font-weight:bold;">-</span>
+                <div class="metric-row" style="border-bottom: none;">
+                    <span>Evaluated Run Token Footprint</span><span id="metric-tok-proc" style="color: var(--clr-rose);">-</span>
                 </div>
             </div>
         </div>
@@ -201,19 +360,23 @@ let localStateRunCellRecord = null;
 let currentCanvasActiveMode = "original";
 
 /**
- * JavaScript Data Binding Receiver
- * Fires whenever a grid sidebar button tab cell is targeted.
+ * Unpacks the cell data cleanly without background compiler conflicts.
  */
+function handleSidebarClick(element) {
+    const rawData = element.getAttribute('data-matrix-run');
+    if (!rawData) return;
+    const runRecord = JSON.parse(rawData);
+    loadTargetMatrixRunCell(element, runRecord);
+}
+
 function loadTargetMatrixRunCell(element, runRecord) {
     if(!runRecord) return;
     localStateRunCellRecord = runRecord;
     
-    // Toggle active styles across sidebar nodes
     const buttons = document.getElementsByClassName("matrix-cell-btn");
     for(let b of buttons) b.classList.remove("active-run");
     if(element) element.classList.add("active-run");
     
-    // Fill textual response contents
     document.getElementById("box-original-output").value = runRecord.original_output;
     document.getElementById("box-processed-output").value = runRecord.processed_output;
     document.getElementById("metric-t-orig").textContent = runRecord.time_original + " s";
@@ -226,7 +389,23 @@ function loadTargetMatrixRunCell(element, runRecord) {
     document.getElementById("metric-tok-orig").textContent = runRecord.token_original + " t";
     document.getElementById("metric-tok-proc").textContent = runRecord.token_processed + " t";
     
-    // Update active media elements paths
+    // Dynamic Tab Hiding Layer based on file properties
+    const extractedBtn = document.getElementById("show-extracted");
+    const augmentedBtn = document.getElementById("show-augmented");
+    
+    if (runRecord.media_type === "image") {
+        extractedBtn.classList.add("hidden-layout"); // Hide the extra video tab completely
+        augmentedBtn.textContent = "Augmented Image"; // Rename the tab to be contextually accurate
+        
+        // Safety check: if the user left the UI on 'extracted' mode, force-revert it back to original
+        if (currentCanvasActiveMode === "extracted") {
+            currentCanvasActiveMode = "original";
+        }
+    } else {
+        extractedBtn.classList.remove("hidden-layout"); // Restore tab for video logs
+        augmentedBtn.textContent = "Augmented Frames";
+    }
+    
     toggleDisplayCanvasView(currentCanvasActiveMode);
 }
 
@@ -237,9 +416,11 @@ function toggleDisplayCanvasView(mode) {
     const imgView = document.getElementById("main-view-image");
     const vidView = document.getElementById("main-view-video");
     const galleryBlock = document.getElementById("dashboard-video-gallery");
+    const strip = document.getElementById("gallery-strip-anchor");
     
     document.getElementById("show-original").classList.toggle("active", mode === "original");
-    document.getElementById("show-processed").classList.toggle("active", mode === "processed");
+    document.getElementById("show-extracted").classList.toggle("active", mode === "extracted");
+    document.getElementById("show-augmented").classList.toggle("active", mode === "augmented");
     
     const isVideo = (localStateRunCellRecord.media_type === "video");
     
@@ -255,39 +436,56 @@ function toggleDisplayCanvasView(mode) {
             imgView.src = localStateRunCellRecord.media_path_web;
         }
     } else {
-        if(isVideo) {
-            vidView.classList.add("hidden-layout");
-            imgView.classList.remove("hidden-layout");
-            galleryBlock.classList.remove("hidden-layout");
-            
-            const strip = document.getElementById("gallery-strip-anchor");
-            strip.innerHTML = "";
-            
-            const arraySource = localStateRunCellRecord.extracted_keyframes || [];
-            imgView.src = arraySource[0] || "";
-            
-            arraySource.forEach((url, i) => {
-                const wrap = document.createElement("div");
-                wrap.className = "frame-thumb-wrapper" + (i === 0 ? " active-thumb" : "");
-                wrap.onclick = () => {
-                    const thumbs = strip.getElementsByClassName("frame-thumb-wrapper");
-                    for(let t of thumbs) t.classList.remove("active-thumb");
-                    wrap.classList.add("active-thumb");
-                    imgView.src = url;
-                };
-                wrap.innerHTML = `<img src="${url}" class="frame-thumb"><div class="frame-meta">Node ${i+1}</div>`;
-                strip.appendChild(wrap);
-            });
-        } else {
+        // ==========================================
+        // 📷 IMAGE MATRIX CONDITIONAL RENDERING
+        // ==========================================
+        if(!isVideo) {
             galleryBlock.classList.add("hidden-layout");
             vidView.classList.add("hidden-layout");
             imgView.classList.remove("hidden-layout");
             imgView.src = localStateRunCellRecord.augmented_media_path;
+            return;
         }
+
+        // ==========================================
+        // 🎬 VIDEO TIMELINE CONDITIONAL RENDERING
+        // ==========================================
+        vidView.classList.add("hidden-layout");
+        imgView.classList.remove("hidden-layout");
+        galleryBlock.classList.remove("hidden-layout");
+        strip.innerHTML = "";
+
+        const cleanKeyframes = localStateRunCellRecord.extracted_keyframes || [];
+        
+        let workingArray = [];
+        if (mode === "extracted") {
+            workingArray = cleanKeyframes;
+        } else {
+            for (let i = 0; i < cleanKeyframes.length; i++) {
+                let cleanUrl = cleanKeyframes[i];
+                let augUrl = cleanUrl.replace("/extracted_", "/augmented_").replace("extracted_", "aug_");
+                workingArray.push(augUrl);
+            }
+        }
+        
+        document.getElementById("gallery-title-text").textContent = (mode === "extracted") ? "Extracted Frame Subspace Nodes" : "Augmented Frame Pixels Matrix";
+        imgView.src = workingArray[0] || "";
+        
+        workingArray.forEach((url, i) => {
+            const wrap = document.createElement("div");
+            wrap.className = "frame-thumb-wrapper" + (i === 0 ? " active-thumb" : "");
+            wrap.onclick = () => {
+                const thumbs = strip.getElementsByClassName("frame-thumb-wrapper");
+                for(let t of thumbs) t.classList.remove("active-thumb");
+                wrap.classList.add("active-thumb");
+                imgView.src = url;
+            };
+            wrap.innerHTML = `<img src="${url}" class="frame-thumb"><div class="frame-meta">Node ${i+1}</div>`;
+            strip.appendChild(wrap);
+        });
     }
 }
 
-// Automatically load page parameters during first DOM mount event trigger
 window.addEventListener('DOMContentLoaded', () => {
     const defaultNodeButton = document.querySelector(".matrix-cell-btn");
     if(defaultNodeButton) defaultNodeButton.click();
