@@ -9,7 +9,7 @@
         :root {
             --bg-main: #0b0f19;
             --bg-card: rgba(17, 24, 39, 0.7);
-            --border-glow: rgba(51, 65, 85, 0.5);
+            --border-glow: rgba(255, 255, 255, 0.08);
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
             
@@ -20,6 +20,8 @@
             --clr-video-glow: rgba(168, 85, 247, 0.25);
             --clr-action: #10b981;
             --clr-action-glow: rgba(16, 185, 129, 0.3);
+            --clr-excel: #10b981;
+            --clr-excel-glow: rgba(16, 185, 129, 0.25);
         }
 
         /* Base Resets & Typography */
@@ -51,15 +53,40 @@
             z-index: 10;
         }
 
-        h1 {
-            font-size: 2.2rem;
-            font-weight: 800;
-            text-align: center;
+        .header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 25px;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 800;
             letter-spacing: -0.03em;
             background: linear-gradient(135deg, #fff 30%, var(--text-muted) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+        }
+
+        .excel-link-btn {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--clr-excel);
+            border: 1px solid rgba(16, 185, 129, 0.35);
+            padding: 10px 16px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 0 12px var(--clr-excel-glow);
+        }
+
+        .excel-link-btn:hover {
+            background: rgba(16, 185, 129, 0.25);
+            transform: translateY(-1px);
         }
 
         /* Glassmorphic Cards */
@@ -197,12 +224,13 @@
         .batch-image-header {
             font-size: 0.85rem;
             font-weight: 700;
-            color: var(--clr-image);
             margin-bottom: 12px;
             display: flex;
             align-items: center;
             gap: 6px;
         }
+        .header-mode-image { color: var(--clr-image); }
+        .header-mode-video { color: var(--clr-video); }
 
         /* Master Matrix Button Trigger */
         .primary-btn {
@@ -244,7 +272,7 @@
 
         @keyframes spin { to { transform: rotate(300deg); } }
 
-        .helper-text { font-size: 0.78rem; color: var(--text-muted); margin-top: 6px; }
+        .helper-text { font-size: 0.78rem; color: var(--text-muted); margin-top: 6px; display: block; }
         .conditional-group { margin-bottom: 20px; }
         .hidden-element { display: none !important; }
     </style>
@@ -253,11 +281,16 @@
 
 <div class="engine-container">
 
-    <h1>VLM Evaluation Studio</h1>
+    <div class="header-bar">
+        <h1>VLM Evaluation Studio</h1>
+        <a href="/excel_studio" target="_blank" class="excel-link-btn">
+            📊 Batch Excel Studio ↗
+        </a>
+    </div>
 
     <div class="tabs-nav">
         <button type="button" class="tab-btn active-img" id="tab-image" onclick="switchProcessingMode('image')">📷 Batch Image Matrix</button>
-        <button type="button" class="tab-btn" id="tab-video" onclick="switchProcessingMode('video')">🎬 Video Gating Node</button>
+        <button type="button" class="tab-btn" id="tab-video" onclick="switchProcessingMode('video')">🎬 Batch Video Matrix</button>
     </div>
 
     <div id="loading" class="glass-card" style="display: none;">
@@ -287,7 +320,7 @@
 
         <div id="image-transform-group" class="conditional-group">
             <label>Global Augmentation Operators</label>
-            <select name="augmentation_methods" multiple style="height: 140px; font-family: monospace;" required>
+            <select name="augmentation_methods" multiple style="height: 140px; font-family: monospace;">
                 {% for aug in augmentations %}
                 <option value="{{ aug }}">⚡ {{ aug }}</option>
                 {% endfor %}
@@ -295,32 +328,28 @@
             <span class="helper-text">Hold Ctrl / Cmd to benchmark multiple variations at once</span>
         </div>
 
-        <div id="dynamic-pairwise-container" class="conditional-group"></div>
-
         <div id="video-sampling-group" class="conditional-group hidden-element">
-            <label>Temporal Keyframe Extraction Strategy</label>
-            <select name="video_sampling_method" id="video_sampling_method">
-                <option value="1">Method 1: Traditional Codec Baseline (I-Frame Extraction)</option>
-                <option value="2">Method 2: Unsupervised Spatial-Diversity Feature Selection (MaxInfo)</option>
-                <option value="3">Method 3: Sparse Optical Flow Tracking and Feature Velocity Gating</option>
-                <option value="4">Method 4: Latent Trajectory Space Partitioning and Deep Feature Distance</option>
-                <option value="5">Method 5: Query-Aware Semantic Token Gating (Q-Frame Framework)</option>
-                <option value="6">Method 6: Inference-Time Query-Frame Prioritization (BOLT Framework)</option>
+            <label>Temporal Keyframe Extraction Strategies</label>
+            <select name="video_sampling_methods" id="video_sampling_methods" multiple style="height: 140px; font-family: monospace;">
+                <option value="1">🎞️ Method 1: Fixed Interval Codec Baseline</option>
+                <option value="2">🎞️ Method 2: MaxInfo Entropy Selection</option>
+                <option value="3">🎞️ Method 3: Sparse Optical Flow Tracking</option>
+                <option value="4">🎞️ Method 4: Latent Distance Space Partitioning</option>
+                <option value="5">🎞️ Method 5: Q-Frame Semantic Token Gating</option>
+                <option value="6">🎞️ Method 6: BOLT Distribution Prioritization</option>
             </select>
+            <span class="helper-text">Select multiple temporal filters to process evaluations</span>
 
-            <label style="margin-top: 16px;">2D Frame Modification Filter</label>
-            <select name="augmentation_method_video">
+            <label style="margin-top: 16px;">2D Frame Post-Augmentation Filter Matrix</label>
+            <select name="augmentation_methods_video" id="augmentation_methods_video" multiple style="height: 140px; font-family: monospace;">
                 {% for aug in augmentations %}
-                <option value="{{ aug }}">{{ aug }}</option>
+                <option value="{{ aug }}">⚡ {{ aug }}</option>
                 {% endfor %}
             </select>
-
-            <label style="margin-top: 16px;">Video prompt / Evaluation query</label>
-            <input type="text" id="video-prompt-field" placeholder="e.g., Identify the action or item coordinates...">
-
-            <label style="margin-top: 16px;">Expected Ground Truth Reference</label>
-            <input type="text" id="video-gt-field" placeholder="Type verified correct baseline response...">
+            <span class="helper-text">Run parallel image operations over extracted sequences</span>
         </div>
+
+        <div id="dynamic-pairwise-container" class="conditional-group"></div>
 
         <button type="submit" class="primary-btn">
             Execute Pipeline Matrix
@@ -332,8 +361,8 @@
 
 <script>
 /**
- * Monitors the file upload zone.
- * Generates an automated form matrix block for each uploaded item.
+ * Monitors the single file upload component interface.
+ * Spawns dedicated contextual prompt-ground truth config rows based on active operational mode.
  */
 document.getElementById('media-input').addEventListener('change', function(e) {
     const container = document.getElementById('dynamic-pairwise-container');
@@ -342,24 +371,33 @@ document.getElementById('media-input').addEventListener('change', function(e) {
     const files = e.target.files;
     if (files.length === 0) return;
 
+    const currentMode = document.getElementById('processing_mode').value;
+    const isImage = (currentMode === 'image');
+
     const titleBlock = document.createElement('div');
     titleBlock.className = 'matrix-section-title';
-    titleBlock.innerHTML = '⚙️ Configure Independent Query Matrix targets';
+    titleBlock.innerHTML = '⚙️ Configure Independent Query Matrix Targets';
     container.appendChild(titleBlock);
 
     for (let i = 0; i < files.length; i++) {
         const file = files[i];
         const card = document.createElement('div');
         card.className = 'batch-image-config-card';
+        
+        // Match look boundaries using neon track indicators
+        const headerClass = isImage ? 'batch-image-header header-mode-image' : 'batch-image-header header-mode-video';
+        const emoji = isImage ? '🖼️' : '🎬';
+        const typeLabel = isImage ? 'Image Node' : 'Video Stream';
+
         card.innerHTML = `
-            <div class="batch-image-header">🖼️ Node [${i + 1}]: ${file.name}</div>
+            <div class="${headerClass}">${emoji} ${typeLabel} [${i + 1}]: ${file.name}</div>
             <div style="margin-bottom:10px;">
                 <label style="font-size:0.75rem; color:var(--text-muted);">Evaluation Query Prompt</label>
-                <input type="text" class="file-prompt-input" required placeholder="What should VLM look for in ${file.name}?">
+                <input type="text" class="file-prompt-input" required placeholder="What should VLM evaluate inside ${file.name}?">
             </div>
             <div>
                 <label style="font-size:0.75rem; color:var(--text-muted);">Ground Truth Reference</label>
-                <input type="text" class="file-gt-input" required placeholder="Type accurate target answer...">
+                <input type="text" class="file-gt-input" required placeholder="Type verified accurate baseline text response...">
             </div>
         `;
         container.appendChild(card);
@@ -383,26 +421,23 @@ function switchProcessingMode(mode) {
     const mediaInput = document.getElementById('media-input');
     const mediaHelper = document.getElementById('media-helper');
     
+    // Completely clear out old values to prevent input mixing mutations
+    mediaInput.value = "";
+    pairGroup.innerHTML = "";
+
     if (isImage) {
         imgGroup.classList.remove('hidden-element');
-        pairGroup.classList.remove('hidden-element');
         vidGroup.classList.add('hidden-element');
         mediaLabel.textContent = "Drop batch images here or click to browse";
-        mediaInput.setAttribute('name', 'files');
-        mediaInput.setAttribute('multiple', 'multiple');
+        mediaHelper.textContent = "Supports bulk multi-image uploading streams";
         mediaInput.setAttribute('accept', 'image/*');
-        mediaInput.value = "";
-        pairGroup.innerHTML = "";
         document.getElementById('status').style.color = 'var(--clr-image)';
     } else {
         imgGroup.classList.add('hidden-element');
-        pairGroup.classList.add('hidden-element');
         vidGroup.classList.remove('hidden-element');
-        mediaLabel.textContent = "Drop video clip here or click to browse (.mp4, .avi)";
-        mediaInput.setAttribute('name', 'file');
-        mediaInput.removeAttribute('multiple');
+        mediaLabel.textContent = "Drop batch video clips here or click to browse";
+        mediaHelper.textContent = "Supports simultaneous bulk video array tracking (.mp4, .avi, .mov)";
         mediaInput.setAttribute('accept', 'video/*');
-        mediaInput.value = "";
         document.getElementById('status').style.color = 'var(--clr-video)';
     }
 }
@@ -416,11 +451,16 @@ document.getElementById('process-form').addEventListener('submit', async functio
     finalFormData.append('processing_mode', mode);
     finalFormData.append('model_name', form.model_name.value);
 
+    const fileInput = document.getElementById('media-input');
+    const promptFields = document.getElementsByClassName('file-prompt-input');
+    const gtFields = document.getElementsByClassName('file-gt-input');
+
+    if (fileInput.files.length === 0) {
+        alert("Please select input media assets to proceed.");
+        return;
+    }
+
     if (mode === 'image') {
-        const fileInput = document.getElementById('media-input');
-        const promptFields = document.getElementsByClassName('file-prompt-input');
-        const gtFields = document.getElementsByClassName('file-gt-input');
-        
         const augSelect = form.augmentation_methods;
         for (let option of augSelect.options) {
             if (option.selected) finalFormData.append('augmentation_methods', option.value);
@@ -432,13 +472,23 @@ document.getElementById('process-form').addEventListener('submit', async functio
             finalFormData.append('image_ground_truths', gtFields[i].value);
         }
     } else {
-        const fileInput = document.getElementById('media-input');
-        if(fileInput.files.length > 0) finalFormData.append('file', fileInput.files[0]);
-        
-        finalFormData.append('video_sampling_method', form.video_sampling_method.value);
-        finalFormData.append('augmentation_method_video', form.augmentation_method_video.value);
-        finalFormData.append('prompt', document.getElementById('video-prompt-field').value);
-        finalFormData.append('ground_truth', document.getElementById('video-gt-field').value);
+        // Collect video strategy selection array
+        const samplingSelect = document.getElementById('video_sampling_methods');
+        for (let option of samplingSelect.options) {
+            if (option.selected) finalFormData.append('video_sampling_methods', option.value);
+        }
+
+        // Collect video image augmentation modifiers array
+        const vidAugSelect = document.getElementById('augmentation_methods_video');
+        for (let option of vidAugSelect.options) {
+            if (option.selected) finalFormData.append('augmentation_methods_video', option.value);
+        }
+
+        for (let i = 0; i < fileInput.files.length; i++) {
+            finalFormData.append('video_files', fileInput.files[i]);
+            finalFormData.append('video_prompts', promptFields[i].value);
+            finalFormData.append('video_ground_truths', gtFields[i].value);
+        }
     }
 
     form.style.display = 'none';

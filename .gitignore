@@ -6,3 +6,4 @@ models/
 
 # Ignore uploaded media files but keep the directory
 static/uploads/*
+static/cache/*

@@ -27,7 +27,6 @@
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         body {
@@ -49,7 +48,6 @@
             height: 100vh;
         }
 
-        /* Glassmorphic Cards & Panes */
         .glass-pane {
             background: var(--bg-card);
             backdrop-filter: blur(12px);
@@ -61,7 +59,6 @@
             flex-direction: column;
         }
 
-        /* Sidebar Matrix List Navigation */
         .sidebar-tabs {
             flex: 0 0 340px;
             padding: 20px;
@@ -82,8 +79,7 @@
             padding-right: 4px;
         }
 
-        /* Custom Modern Scrollbars */
-        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.2); }
@@ -100,6 +96,7 @@
             text-align: left;
             font-size: 0.85rem;
             line-height: 1.4;
+            transition: all 0.2s ease;
         }
 
         .matrix-cell-btn:hover {
@@ -115,16 +112,17 @@
             box-shadow: inset 0 0 12px rgba(59, 130, 246, 0.15);
         }
 
-        /* Workspace Core Splits */
         .workspace-view {
             flex: 1;
             display: flex;
             gap: 24px;
+            min-width: 0;
         }
 
         .canvas-panel {
             flex: 1.1;
             padding: 24px;
+            min-width: 0;
         }
 
         .metrics-panel {
@@ -133,7 +131,6 @@
             overflow-y: auto;
         }
 
-        /* 3-Button Structural Navigation Deck Selector */
         .media-toggle {
             display: flex;
             background: rgba(15, 23, 42, 0.8);
@@ -154,6 +151,7 @@
             font-weight: 600;
             border-radius: 6px;
             cursor: pointer;
+            transition: all 0.2s ease;
         }
 
         .toggle-btn:hover { color: #fff; }
@@ -165,7 +163,6 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.2);
         }
 
-        /* Media Screen Display Window */
         .media-viewer-frame {
             width: 100%;
             height: 420px;
@@ -185,30 +182,37 @@
             object-fit: contain;
         }
 
-        /* Video Frame Storyboard Galleries */
         .frame-gallery-container {
             margin-top: 20px;
             background: rgba(9, 13, 22, 0.6);
             padding: 14px;
             border-radius: 12px;
             border: 1px solid rgba(255, 255, 255, 0.04);
+            max-height: 220px;
+            overflow-y: auto;
         }
 
         .frame-strip {
             display: flex;
+            flex-wrap: wrap;
             gap: 12px;
-            overflow-x: auto;
-            padding-bottom: 6px;
-            margin-top: 8px;
+            margin-top: 10px;
+            padding-bottom: 4px;
         }
 
         .frame-thumb-wrapper {
-            flex: 0 0 105px;
+            flex: 0 0 calc(16.66% - 10px);
+            min-width: 90px;
             cursor: pointer;
             border-radius: 8px;
             overflow: hidden;
             border: 2px solid transparent;
             background: #090d16;
+            transition: all 0.2s ease;
+        }
+
+        @media (max-width: 1200px) {
+            .frame-thumb-wrapper { flex: 0 0 calc(25% - 10px); }
         }
 
         .frame-thumb-wrapper.active-thumb {
@@ -219,7 +223,6 @@
         .frame-thumb { width: 100%; height: 60px; object-fit: cover; display: block; }
         .frame-meta { font-size: 10px; text-align: center; padding: 4px; color: var(--text-muted); background: rgba(0,0,0,0.2); }
 
-        /* Text Response Display Inboxes */
         h4 { font-size: 0.88rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: 8px; }
         
         textarea {
@@ -236,7 +239,6 @@
             margin-bottom: 15px;
         }
 
-        /* Metrics Data Item Boxes */
         .metric-grid { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
         
         .metric-row {
@@ -249,13 +251,13 @@
         .metric-row span:first-child { color: var(--text-muted); font-weight: 500; }
         .metric-row span:last-child { color: var(--text-main); font-weight: 600; }
 
-        /* Structural Global Action Row Group Controls */
         .action-button-group { display: flex; gap: 12px; margin-top: 20px; }
         
         .reset-btn {
             background: rgba(255, 255, 255, 0.05);
             color: white; border: 1px solid rgba(255, 255, 255, 0.1);
             padding: 14px; border-radius: 10px; font-weight: 700; cursor: pointer; flex: 1;
+            transition: background 0.2s ease;
         }
         .reset-btn:hover { background: rgba(255, 255, 255, 0.08); }
 
@@ -263,6 +265,7 @@
             background: linear-gradient(135deg, var(--clr-emerald) 0%, #059669 100%);
             color: white; padding: 14px; border-radius: 10px; font-weight: 700; text-decoration: none;
             text-align: center; flex: 2; box-shadow: 0 4px 15px var(--clr-emerald-glow);
+            transition: all 0.2s ease;
         }
         .download-btn-flex:hover { transform: translateY(-1px); box-shadow: 0 6px 20px var(--clr-emerald-glow); }
 
@@ -332,10 +335,10 @@
                     <span>Latency Delta Difference</span><span id="metric-t-diff" style="color: var(--clr-emerald);">-</span>
                 </div>
                 <div class="metric-row">
-                    <span>Original Output BERTScore</span><span id="metric-b-orig">-</span>
+                    <span>Original Run BERTScore</span><span id="metric-b-orig">-</span>
                 </div>
                 <div class="metric-row">
-                    <span>Original Output BLEU Score</span><span id="metric-bl-orig">-</span>
+                    <span>Original Run BLEU Score</span><span id="metric-bl-orig">-</span>
                 </div>
                 <div class="metric-row">
                     <span>Evaluated Run BERTScore</span><span id="metric-b-proc">-</span>
@@ -344,7 +347,7 @@
                     <span>Evaluated Run BLEU Score</span><span id="metric-bl-proc">-</span>
                 </div>
                 <div class="metric-row">
-                    <span>Baseline Token Footprint</span><span id="metric-tok-orig">-</span>
+                    <span>Baseline Input Token Footprint</span><span id="metric-tok-orig">-</span>
                 </div>
                 <div class="metric-row" style="border-bottom: none;">
                     <span>Evaluated Run Token Footprint</span><span id="metric-tok-proc" style="color: var(--clr-rose);">-</span>
@@ -359,9 +362,6 @@
 let localStateRunCellRecord = null;
 let currentCanvasActiveMode = "original";
 
-/**
- * Unpacks the cell data cleanly without background compiler conflicts.
- */
 function handleSidebarClick(element) {
     const rawData = element.getAttribute('data-matrix-run');
     if (!rawData) return;
@@ -389,20 +389,15 @@ function loadTargetMatrixRunCell(element, runRecord) {
     document.getElementById("metric-tok-orig").textContent = runRecord.token_original + " t";
     document.getElementById("metric-tok-proc").textContent = runRecord.token_processed + " t";
     
-    // Dynamic Tab Hiding Layer based on file properties
     const extractedBtn = document.getElementById("show-extracted");
     const augmentedBtn = document.getElementById("show-augmented");
     
     if (runRecord.media_type === "image") {
-        extractedBtn.classList.add("hidden-layout"); // Hide the extra video tab completely
-        augmentedBtn.textContent = "Augmented Image"; // Rename the tab to be contextually accurate
-        
-        // Safety check: if the user left the UI on 'extracted' mode, force-revert it back to original
-        if (currentCanvasActiveMode === "extracted") {
-            currentCanvasActiveMode = "original";
-        }
+        extractedBtn.classList.add("hidden-layout");
+        augmentedBtn.textContent = "Augmented Image";
+        if (currentCanvasActiveMode === "extracted") currentCanvasActiveMode = "original";
     } else {
-        extractedBtn.classList.remove("hidden-layout"); // Restore tab for video logs
+        extractedBtn.classList.remove("hidden-layout");
         augmentedBtn.textContent = "Augmented Frames";
     }
     
@@ -436,9 +431,6 @@ function toggleDisplayCanvasView(mode) {
             imgView.src = localStateRunCellRecord.media_path_web;
         }
     } else {
-        // ==========================================
-        // 📷 IMAGE MATRIX CONDITIONAL RENDERING
-        // ==========================================
         if(!isVideo) {
             galleryBlock.classList.add("hidden-layout");
             vidView.classList.add("hidden-layout");
@@ -447,28 +439,18 @@ function toggleDisplayCanvasView(mode) {
             return;
         }
 
-        // ==========================================
-        // 🎬 VIDEO TIMELINE CONDITIONAL RENDERING
-        // ==========================================
         vidView.classList.add("hidden-layout");
         imgView.classList.remove("hidden-layout");
         galleryBlock.classList.remove("hidden-layout");
         strip.innerHTML = "";
 
+        // FIXED: Reading absolute path arrays natively eliminates string translation bugs!
         const cleanKeyframes = localStateRunCellRecord.extracted_keyframes || [];
+        const augmentedKeyframes = localStateRunCellRecord.augmented_keyframes || [];
         
-        let workingArray = [];
-        if (mode === "extracted") {
-            workingArray = cleanKeyframes;
-        } else {
-            for (let i = 0; i < cleanKeyframes.length; i++) {
-                let cleanUrl = cleanKeyframes[i];
-                let augUrl = cleanUrl.replace("/extracted_", "/augmented_").replace("extracted_", "aug_");
-                workingArray.push(augUrl);
-            }
-        }
-        
+        const workingArray = (mode === "extracted") ? cleanKeyframes : augmentedKeyframes;
         document.getElementById("gallery-title-text").textContent = (mode === "extracted") ? "Extracted Frame Subspace Nodes" : "Augmented Frame Pixels Matrix";
+        
         imgView.src = workingArray[0] || "";
         
         workingArray.forEach((url, i) => {

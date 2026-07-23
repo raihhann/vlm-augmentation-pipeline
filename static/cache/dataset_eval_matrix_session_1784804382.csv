@@ -1,0 +1,65 @@
+Image Filename,Evaluation Method,Evaluation Prompt,Ground Truth Reference,Question Category,Baseline Output,Augmented Output,Baseline Latency (s),Augmented Latency (s),Latency Delta Difference (s),Baseline BERTScore,Baseline BLEU Score,Augmented BERTScore,Augmented BLEU Score,Baseline Tokens,Augmented Tokens
+1.png,GammaCorrection,Describe the primary layout and main features of this scene.,"The scene depicts the exterior of a modern building with a distinctive orange-colored wall. Key features and layout elements include:
+
+1. **Building Exterior**:
+   - The building has a bright orange wall with a clean, minimalist design.
+   - A glass door or window is visible, allowing a glimpse into the interior, which appears to be a room with furniture and a red chair.
+
+2. **Staircase and Steps**:
+   - A short set of concrete steps leads up to the entrance of the building.
+   - The steps are flanked by greenery, including creeping plants and ivy, which overhang the edges, giving a natural and landscaped appearance.
+
+3. **Landscaping**:
+   - The area around the steps is landscaped with dense greenery, including shrubs and plants, which add a lush, natural feel to the scene.
+   - The steps are bordered by low concrete curbs, defining the edges of the landscaping.
+
+4. **Surroundings**:
+   - The foreground includes a paved area, likely a sidewalk or driveway, leading up to the steps.
+   - In the background, there are additional trees and greenery, suggesting a landscaped or garden-like environment.
+
+5. **Miscellaneous Features**:
+   - A metal pole or rod is leaning against the wall near the steps, possibly a temporary or decorative element.
+   - The overall atmosphere is modern yet harmonious with nature, blending architectural and natural elements.
+
+This layout combines modern architecture with natural landscaping, creating an inviting and aesthetically pleasing entrance.",Contextual & Scene Understanding,"[MOCK VLM RESPONSE (ORIGINAL MODE)]
+Analysis of the tracking sequence relative to prompt: 'Describe the primary layout and main features of this scene.'.
+The model successfully isolated the focal object moving across the frame bounding zones. The subject maintains a stable vector trajectory despite localized lighting noise.","[MOCK VLM RESPONSE (AUGMENTED MODE)]
+Analysis of the tracking sequence relative to prompt: 'Describe the primary layout and main features of this scene.'.
+The model successfully isolated the focal object moving across the frame bounding zones. The subject maintains a stable vector trajectory despite localized lighting noise.",0.5,0.98,0.48,0.7071402668952942,0.00025772029208050493,0.706916868686676,0.00025772029208050493,47,47
+2.png,GammaCorrection,Describe the primary layout and main features of this scene.,"The primary layout and main features of the scene are as follows:
+
+1. **Staircase**: A set of concrete steps leads upward, flanked by greenery on both sides. The steps are bordered by a metal handrail on the right.
+
+2. **Building Wall**: The right side of the scene features a red-painted wall of a building, which appears to be part of a house or structure. The wall has a smooth texture and includes a small door or opening at the base.
+
+3. **Greenery**: The area is lush with plants and vegetation. Green bushes, grass, and wildflowers are visible along the sides of the steps and in the surrounding garden area.
+
+4. **Garden Area**: At the top of the steps, there is a grassy garden space with some cultivated plants and a large white dome-like structure (possibly a greenhouse or storage shed) partially visible.
+
+5. **Pathway**: A gravel or pebble pathway runs alongside the steps and continues into the garden area.
+
+6. **Lighting Fixture**: A streetlight or lamp post is visible in the bottom-right corner of the image.
+
+7. **Overall Environment**: The scene appears to be in a residential area with a focus on greenery and a mix of natural and built elements. The setting is peaceful and well-maintained.",Contextual & Scene Understanding,"[MOCK VLM RESPONSE (ORIGINAL MODE)]
+The vision system reports high structural matching confidence for the target object. Temporal redundancy filtering has eliminated background drift artifacts, leaving clear semantic observations.","[MOCK VLM RESPONSE (AUGMENTED MODE)]
+Analysis of the tracking sequence relative to prompt: 'Describe the primary layout and main features of this scene.'.
+The model successfully isolated the focal object moving across the frame bounding zones. The subject maintains a stable vector trajectory despite localized lighting noise.",0.5,1.24,0.74,0.6758646965026855,1.8392359611169167e-05,0.7215796113014221,0.004188190417538859,29,47
+3.png,GammaCorrection,Describe the primary layout and main features of this scene.,"The primary layout and main features of the scene are as follows:
+
+1. **Central Pathway**: A paved pathway runs through the center of the image, extending into the distance. The pathway is flanked by grassy areas on both sides.
+
+2. **Grassy Areas**: The pathway is bordered by grassy areas that show signs of overgrowth, particularly around the edges and in patches along the sides.
+
+3. **Stepping Stones**: There are scattered stepping stones in the grassy areas, especially noticeable on the right side of the pathway. These stones appear unevenly placed and partially embedded in the grass.
+
+4. **Buildings**: Two orange-colored buildings with dark window shutters flank the pathway on either side. The buildings have rounded architectural features, such as arched windows and rounded edges.
+
+5. **Vegetation**: There are trees and bushes in the background, providing a natural backdrop to the scene. The greenery is lush, indicating a well-vegetated area.
+
+6. **Condition of the Pathway**: The pathway shows signs of wear and tear, with visible cracks and discoloration.
+
+7. **Overall Setting**: The scene appears to be in a residential or suburban area, with a focus on a landscaped pathway connecting the two buildings.
+
+The overall impression is a somewhat neglected yet green and natural setting.",Contextual & Scene Understanding,"[MOCK VLM RESPONSE (ORIGINAL MODE)]
+The vision system reports high structural matching confidence for the target object. Temporal redundancy filtering has eliminated background drift artifacts, leaving clear semantic observations.","[MOCK VLM RESPONSE (AUGMENTED MODE)]
+The vision system reports high structural matching confidence for the target object. Temporal redundancy filtering has eliminated background drift artifacts, leaving clear semantic observations.",0.5,0.93,0.43,0.6906642913818359,1.8430692372988957e-05,0.6894906759262085,1.8430692372988957e-05,29,29
