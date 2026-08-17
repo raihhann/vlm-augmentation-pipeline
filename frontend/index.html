@@ -5,15 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Multimodal VLM Evaluator Engine</title>
     <style>
-        /* Modern 2026 Design Token Variables */
         :root {
             --bg-main: #0b0f19;
             --bg-card: rgba(17, 24, 39, 0.7);
             --border-glow: rgba(255, 255, 255, 0.08);
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
-            
-            /* Neon Glow Color Tracks */
             --clr-image: #06b6d4;
             --clr-image-glow: rgba(6, 182, 212, 0.25);
             --clr-video: #a855f7;
@@ -24,13 +21,7 @@
             --clr-excel-glow: rgba(16, 185, 129, 0.25);
         }
 
-        /* Base Resets & Typography */
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
 
         body {
             background-color: var(--bg-main);
@@ -47,230 +38,112 @@
                 radial-gradient(circle at 90% 80%, rgba(168, 85, 247, 0.06) 0%, transparent 45%);
         }
 
-        .engine-container {
-            width: 100%;
-            max-width: 700px;
-            z-index: 10;
-        }
+        .engine-container { width: 100%; max-width: 700px; z-index: 10; }
 
         .header-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
+            display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;
         }
 
         h1 {
-            font-size: 2rem;
-            font-weight: 800;
-            letter-spacing: -0.03em;
+            font-size: 2rem; font-weight: 800; letter-spacing: -0.03em;
             background: linear-gradient(135deg, #fff 30%, var(--text-muted) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
 
         .excel-link-btn {
-            background: rgba(16, 185, 129, 0.15);
-            color: var(--clr-excel);
-            border: 1px solid rgba(16, 185, 129, 0.35);
-            padding: 10px 16px;
-            border-radius: 10px;
-            font-weight: 700;
-            font-size: 0.85rem;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 6px;
+            background: rgba(16, 185, 129, 0.15); color: var(--clr-excel);
+            border: 1px solid rgba(16, 185, 129, 0.35); padding: 10px 16px;
+            border-radius: 10px; font-weight: 700; font-size: 0.85rem;
+            text-decoration: none; display: flex; align-items: center; gap: 6px;
             box-shadow: 0 0 12px var(--clr-excel-glow);
         }
-
         .excel-link-btn:hover {
-            background: rgba(16, 185, 129, 0.25);
-            transform: translateY(-1px);
+            background: rgba(16, 185, 129, 0.25); transform: translateY(-1px);
         }
 
-        /* Glassmorphic Cards */
         .glass-card {
-            background: var(--bg-card);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 16px;
-            padding: 30px;
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            background: var(--bg-card); backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px; padding: 30px; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
         }
 
-        /* 2026 Navigation Tabs */
         .tabs-nav {
-            display: flex;
-            background: rgba(15, 23, 42, 0.6);
-            padding: 6px;
-            border-radius: 12px;
-            margin-bottom: 25px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex; background: rgba(15, 23, 42, 0.6); padding: 6px;
+            border-radius: 12px; margin-bottom: 25px; border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
         .tab-btn {
-            flex: 1;
-            background: transparent;
-            color: var(--text-muted);
-            border: none;
-            padding: 12px;
-            font-size: 0.95rem;
-            font-weight: 600;
-            border-radius: 8px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
+            flex: 1; background: transparent; color: var(--text-muted);
+            border: none; padding: 12px; font-size: 0.95rem; font-weight: 600;
+            border-radius: 8px; cursor: pointer; display: flex; align-items: center;
+            justify-content: center; gap: 8px;
         }
-
-        .tab-btn:hover {
-            color: var(--text-main);
-            background: rgba(255, 255, 255, 0.03);
-        }
+        .tab-btn:hover { color: var(--text-main); background: rgba(255, 255, 255, 0.03); }
 
         .tab-btn.active-img {
-            background: rgba(6, 182, 212, 0.15);
-            color: var(--clr-image);
-            border: 1px solid rgba(6, 182, 212, 0.3);
-            box-shadow: 0 0 15px var(--clr-image-glow);
+            background: rgba(6, 182, 212, 0.15); color: var(--clr-image);
+            border: 1px solid rgba(6, 182, 212, 0.3); box-shadow: 0 0 15px var(--clr-image-glow);
         }
-
         .tab-btn.active-vid {
-            background: rgba(168, 85, 247, 0.15);
-            color: var(--clr-video);
-            border: 1px solid rgba(168, 85, 247, 0.3);
-            box-shadow: 0 0 15px var(--clr-video-glow);
+            background: rgba(168, 85, 247, 0.15); color: var(--clr-video);
+            border: 1px solid rgba(168, 85, 247, 0.3); box-shadow: 0 0 15px var(--clr-video-glow);
         }
 
-        /* Modern Form Layout Elements */
         label {
-            display: block;
-            font-size: 0.85rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: var(--text-muted);
-            margin-bottom: 8px;
+            display: block; font-size: 0.85rem; font-weight: 600;
+            text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: 8px;
         }
 
-        input[type="text"], select {
-            width: 100%;
-            background: rgba(15, 23, 42, 0.8);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
-            padding: 12px 16px;
-            color: var(--text-main);
-            font-size: 0.95rem;
-            outline: none;
+        input[type="text"], input[type="number"], select {
+            width: 100%; background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px;
+            padding: 12px 16px; color: var(--text-main); font-size: 0.95rem; outline: none;
+        }
+        input[type="text"]:focus, select:focus, input[type="number"]:focus {
+            border-color: #3b82f6; box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
         }
 
-        input[type="text"]:focus, select:focus {
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
-        }
-
-        /* File Upload Interface Area */
         .file-upload-zone {
-            position: relative;
-            border: 2px dashed rgba(255, 255, 255, 0.15);
-            border-radius: 12px;
-            padding: 24px;
-            text-align: center;
-            background: rgba(15, 23, 42, 0.3);
-            cursor: pointer;
-            margin-bottom: 20px;
+            position: relative; border: 2px dashed rgba(255, 255, 255, 0.15);
+            border-radius: 12px; padding: 24px; text-align: center;
+            background: rgba(15, 23, 42, 0.3); cursor: pointer; margin-bottom: 20px;
         }
-
-        .file-upload-zone:hover {
-            border-color: #3b82f6;
-            background: rgba(59, 130, 246, 0.02);
-        }
-
+        .file-upload-zone:hover { border-color: #3b82f6; background: rgba(59, 130, 246, 0.02); }
         .file-upload-zone input[type="file"] {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            opacity: 0;
-            cursor: pointer;
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer;
         }
 
-        /* Dynamic Configurations Matrix Cards */
         .matrix-section-title {
-            font-size: 0.9rem;
-            font-weight: 700;
-            color: var(--text-main);
-            margin: 25px 0 10px 0;
-            display: flex;
-            align-items: center;
-            gap: 6px;
+            font-size: 0.9rem; font-weight: 700; color: var(--text-main);
+            margin: 25px 0 10px 0; display: flex; align-items: center; gap: 6px;
         }
 
         .batch-image-config-card {
-            background: rgba(15, 23, 42, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 10px;
-            padding: 16px;
-            margin-top: 12px;
-            animation: slideIn 0.3s ease forwards;
-        }
-
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(8px); }
-            to { opacity: 1; transform: translateY(0); }
+            background: rgba(15, 23, 42, 0.5); border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 10px; padding: 16px; margin-top: 12px;
         }
 
         .batch-image-header {
-            font-size: 0.85rem;
-            font-weight: 700;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
+            font-size: 0.85rem; font-weight: 700; margin-bottom: 12px;
+            display: flex; align-items: center; gap: 6px;
         }
         .header-mode-image { color: var(--clr-image); }
         .header-mode-video { color: var(--clr-video); }
 
-        /* Master Matrix Button Trigger */
         .primary-btn {
-            width: 100%;
-            background: linear-gradient(135deg, var(--clr-action) 0%, #059669 100%);
-            color: white;
-            border: none;
-            padding: 14px;
-            font-size: 1rem;
-            font-weight: 700;
-            border-radius: 10px;
-            cursor: pointer;
-            box-shadow: 0 4px 20px var(--clr-action-glow);
-            margin-top: 25px;
+            width: 100%; background: linear-gradient(135deg, var(--clr-action) 0%, #059669 100%);
+            color: white; border: none; padding: 14px; font-size: 1rem; font-weight: 700;
+            border-radius: 10px; cursor: pointer; box-shadow: 0 4px 20px var(--clr-action-glow); margin-top: 25px;
         }
+        .primary-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 25px var(--clr-action-glow); }
 
-        .primary-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 25px var(--clr-action-glow);
-        }
-
-        .primary-btn:active { transform: translateY(0); }
-
-        /* Asynchronous Streaming Telemetry Spiders */
-        #loading {
-            text-align: center;
-            padding: 40px 20px;
-        }
-
+        #loading { text-align: center; padding: 40px 20px; }
         .spinner {
-            width: 50px;
-            height: 50px;
-            border: 3px solid rgba(255, 255, 255, 0.05);
-            border-radius: 50%;
-            border-top-color: #3b82f6;
-            margin: 20px auto 0 auto;
+            width: 50px; height: 50px; border: 3px solid rgba(255, 255, 255, 0.05);
+            border-radius: 50%; border-top-color: #3b82f6; margin: 20px auto 0 auto;
             animation: spin 1s linear infinite;
         }
-
-        @keyframes spin { to { transform: rotate(300deg); } }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
         .helper-text { font-size: 0.78rem; color: var(--text-muted); margin-top: 6px; display: block; }
         .conditional-group { margin-bottom: 20px; }
@@ -280,12 +153,9 @@
 <body>
 
 <div class="engine-container">
-
     <div class="header-bar">
         <h1>VLM Evaluation Studio</h1>
-        <a href="/excel_studio" target="_blank" class="excel-link-btn">
-            📊 Batch Excel Studio ↗
-        </a>
+        <a href="/excel_studio" class="excel-link-btn">📊 Batch Excel Studio ↗</a>
     </div>
 
     <div class="tabs-nav">
@@ -299,8 +169,7 @@
         <div class="spinner"></div>
     </div>
 
-    <form id="process-form" action="/process" method="post" enctype="multipart/form-data" class="glass-card">
-        
+    <form id="process-form" class="glass-card">
         <input type="hidden" name="processing_mode" id="processing_mode" value="image">
 
         <div class="file-upload-zone">
@@ -311,7 +180,7 @@
 
         <div class="conditional-group">
             <label>Vision-Language Foundation Model</label>
-            <select name="model_name" required>
+            <select name="model_name" id="model_name" required>
                 {% for model in models %}
                 <option value="{{ model }}">{{ model }}</option>
                 {% endfor %}
@@ -320,7 +189,7 @@
 
         <div id="image-transform-group" class="conditional-group">
             <label>Global Augmentation Operators</label>
-            <select name="augmentation_methods" multiple style="height: 140px; font-family: monospace;">
+            <select name="augmentation_methods" id="augmentation_methods" multiple style="height: 140px; font-family: monospace;">
                 {% for aug in augmentations %}
                 <option value="{{ aug }}">⚡ {{ aug }}</option>
                 {% endfor %}
@@ -330,15 +199,18 @@
 
         <div id="video-sampling-group" class="conditional-group hidden-element">
             <label>Temporal Keyframe Extraction Strategies</label>
-            <select name="video_sampling_methods" id="video_sampling_methods" multiple style="height: 140px; font-family: monospace;">
-                <option value="1">🎞️ Method 1: Fixed Interval Codec Baseline</option>
-                <option value="2">🎞️ Method 2: MaxInfo Entropy Selection</option>
-                <option value="3">🎞️ Method 3: Sparse Optical Flow Tracking</option>
-                <option value="4">🎞️ Method 4: Latent Distance Space Partitioning</option>
-                <option value="5">🎞️ Method 5: Q-Frame Semantic Token Gating</option>
-                <option value="6">🎞️ Method 6: BOLT Distribution Prioritization</option>
+            <select name="video_sampling_methods" id="video_sampling_methods" multiple style="height: 160px; font-family: monospace;">
+                {% for key, label in extractions.items() %}
+                <option value="{{ key }}" {% if key == 'bolt' %}selected{% endif %}>🎞️ {{ label }}</option>
+                {% endfor %}
             </select>
-            <span class="helper-text">Select multiple temporal filters to process evaluations</span>
+            <span class="helper-text">Hold Ctrl / Cmd to benchmark multiple extraction algorithms</span>
+
+            <div style="margin-top: 14px;">
+                <label for="max_frames_video">Maximum Frame Budget (K)</label>
+                <input type="number" id="max_frames_video" name="max_frames_video" value="8" min="1" max="64">
+                <span class="helper-text">Target number of keyframes extracted per video strategy</span>
+            </div>
 
             <label style="margin-top: 16px;">2D Frame Post-Augmentation Filter Matrix</label>
             <select name="augmentation_methods_video" id="augmentation_methods_video" multiple style="height: 140px; font-family: monospace;">
@@ -351,19 +223,11 @@
 
         <div id="dynamic-pairwise-container" class="conditional-group"></div>
 
-        <button type="submit" class="primary-btn">
-            Execute Pipeline Matrix
-        </button>
-
+        <button type="submit" class="primary-btn">Execute Pipeline Matrix</button>
     </form>
-
 </div>
 
 <script>
-/**
- * Monitors the single file upload component interface.
- * Spawns dedicated contextual prompt-ground truth config rows based on active operational mode.
- */
 document.getElementById('media-input').addEventListener('change', function(e) {
     const container = document.getElementById('dynamic-pairwise-container');
     container.innerHTML = "";
@@ -383,8 +247,6 @@ document.getElementById('media-input').addEventListener('change', function(e) {
         const file = files[i];
         const card = document.createElement('div');
         card.className = 'batch-image-config-card';
-        
-        // Match look boundaries using neon track indicators
         const headerClass = isImage ? 'batch-image-header header-mode-image' : 'batch-image-header header-mode-video';
         const emoji = isImage ? '🖼️' : '🎬';
         const typeLabel = isImage ? 'Image Node' : 'Video Stream';
@@ -406,22 +268,17 @@ document.getElementById('media-input').addEventListener('change', function(e) {
 
 function switchProcessingMode(mode) {
     const isImage = (mode === 'image');
-    
-    const imgBtn = document.getElementById('tab-image');
-    const vidBtn = document.getElementById('tab-video');
-    imgBtn.className = 'tab-btn' + (isImage ? ' active-img' : '');
-    vidBtn.className = 'tab-btn' + (!isImage ? ' active-vid' : '');
-    
+    document.getElementById('tab-image').className = 'tab-btn' + (isImage ? ' active-img' : '');
+    document.getElementById('tab-video').className = 'tab-btn' + (!isImage ? ' active-vid' : '');
     document.getElementById('processing_mode').value = mode;
     
     const imgGroup = document.getElementById('image-transform-group');
-    const pairGroup = document.getElementById('dynamic-pairwise-container');
     const vidGroup = document.getElementById('video-sampling-group');
+    const pairGroup = document.getElementById('dynamic-pairwise-container');
     const mediaLabel = document.getElementById('media-label');
     const mediaInput = document.getElementById('media-input');
     const mediaHelper = document.getElementById('media-helper');
     
-    // Completely clear out old values to prevent input mixing mutations
     mediaInput.value = "";
     pairGroup.innerHTML = "";
 
@@ -436,7 +293,7 @@ function switchProcessingMode(mode) {
         imgGroup.classList.add('hidden-element');
         vidGroup.classList.remove('hidden-element');
         mediaLabel.textContent = "Drop batch video clips here or click to browse";
-        mediaHelper.textContent = "Supports simultaneous bulk video array tracking (.mp4, .avi, .mov)";
+        mediaHelper.textContent = "Supports simultaneous bulk video tracking (.mp4, .avi, .mov)";
         mediaInput.setAttribute('accept', 'video/*');
         document.getElementById('status').style.color = 'var(--clr-video)';
     }
@@ -449,7 +306,7 @@ document.getElementById('process-form').addEventListener('submit', async functio
     const finalFormData = new FormData();
     
     finalFormData.append('processing_mode', mode);
-    finalFormData.append('model_name', form.model_name.value);
+    finalFormData.append('model_name', document.getElementById('model_name').value);
 
     const fileInput = document.getElementById('media-input');
     const promptFields = document.getElementsByClassName('file-prompt-input');
@@ -461,24 +318,23 @@ document.getElementById('process-form').addEventListener('submit', async functio
     }
 
     if (mode === 'image') {
-        const augSelect = form.augmentation_methods;
+        const augSelect = document.getElementById('augmentation_methods');
         for (let option of augSelect.options) {
             if (option.selected) finalFormData.append('augmentation_methods', option.value);
         }
-
         for (let i = 0; i < fileInput.files.length; i++) {
             finalFormData.append('image_files', fileInput.files[i]);
             finalFormData.append('image_prompts', promptFields[i].value);
             finalFormData.append('image_ground_truths', gtFields[i].value);
         }
     } else {
-        // Collect video strategy selection array
         const samplingSelect = document.getElementById('video_sampling_methods');
         for (let option of samplingSelect.options) {
             if (option.selected) finalFormData.append('video_sampling_methods', option.value);
         }
 
-        // Collect video image augmentation modifiers array
+        finalFormData.append('max_frames_video', document.getElementById('max_frames_video').value || "8");
+
         const vidAugSelect = document.getElementById('augmentation_methods_video');
         for (let option of vidAugSelect.options) {
             if (option.selected) finalFormData.append('augmentation_methods_video', option.value);
@@ -496,6 +352,16 @@ document.getElementById('process-form').addEventListener('submit', async functio
     
     try {
         const response = await fetch('/process', { method: 'POST', body: finalFormData });
+        
+        if (!response.ok) {
+            const errText = await response.text();
+            console.error("Server HTTP Error:", response.status, errText);
+            alert(`Server Error (${response.status}):\n${errText}`);
+            form.style.display = 'block';
+            document.getElementById('loading').style.display = 'none';
+            return;
+        }
+
         const reader = response.body.getReader();
         const decoder = new TextDecoder();
         let buffer = '';
@@ -525,6 +391,7 @@ document.getElementById('process-form').addEventListener('submit', async functio
                     if (isCollectingHtml) {
                         fullHtml += data + '\n';
                     } else {
+                        console.log("Progress:", data);
                         document.getElementById('status').textContent = data;
                     }
                 }
@@ -538,8 +405,9 @@ document.getElementById('process-form').addEventListener('submit', async functio
         }
     } catch (error) {
         console.error('Error:', error);
-        alert('Server failure executing task.');
-        location.reload();
+        alert('Server communication failure: ' + error.message);
+        form.style.display = 'block';
+        document.getElementById('loading').style.display = 'none';
     }
 });
 

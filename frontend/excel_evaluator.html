@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Excel Dataset Batch Benchmark Studio</title>
-    <!-- SheetJS for client-side column extraction -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <style>
         :root {
@@ -15,6 +14,8 @@
             --text-muted: #94a3b8;
             --clr-excel: #10b981;
             --clr-excel-glow: rgba(16, 185, 129, 0.25);
+            --clr-video: #a855f7;
+            --clr-video-glow: rgba(168, 85, 247, 0.25);
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; transition: all 0.2s ease; }
@@ -31,10 +32,10 @@
             background-image: radial-gradient(circle at 50% 10%, rgba(16, 185, 129, 0.06) 0%, transparent 50%);
         }
 
-        .container { width: 100%; max-width: 760px; }
+        .container { width: 100%; max-width: 780px; }
 
         .header-bar {
-            display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;
+            display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;
         }
 
         h1 { font-size: 1.8rem; font-weight: 800; color: var(--clr-excel); }
@@ -45,26 +46,45 @@
         .back-link:hover { color: var(--text-main); }
 
         .glass-card {
-            background: var(--bg-card);
-            backdrop-filter: blur(16px);
-            border: 1px solid var(--border-glow);
-            border-radius: 16px;
-            padding: 30px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            background: var(--bg-card); backdrop-filter: blur(16px);
+            border: 1px solid var(--border-glow); border-radius: 16px;
+            padding: 30px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+
+        .tabs-nav {
+            display: flex; background: rgba(15, 23, 42, 0.6); padding: 6px;
+            border-radius: 12px; margin-bottom: 20px; border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .tab-btn {
+            flex: 1; background: transparent; color: var(--text-muted);
+            border: none; padding: 12px; font-size: 0.95rem; font-weight: 700;
+            border-radius: 8px; cursor: pointer; display: flex; align-items: center;
+            justify-content: center; gap: 8px;
+        }
+
+        .tab-btn.active-img {
+            background: rgba(16, 185, 129, 0.15); color: var(--clr-excel);
+            border: 1px solid rgba(16, 185, 129, 0.35); box-shadow: 0 0 12px var(--clr-excel-glow);
+        }
+
+        .tab-btn.active-vid {
+            background: rgba(168, 85, 247, 0.15); color: var(--clr-video);
+            border: 1px solid rgba(168, 85, 247, 0.35); box-shadow: 0 0 12px var(--clr-video-glow);
         }
 
         label {
-            display: block; font-size: 0.8rem; font-weight: 700; text-transform: uppercase;
-            letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: 8px; margin-top: 16px;
+            display: block; font-size: 0.8rem; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted);
+            margin-bottom: 8px; margin-top: 16px;
         }
 
-        input[type="text"], select {
+        input[type="text"], input[type="number"], select {
             width: 100%; background: rgba(15, 23, 42, 0.8);
             border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px;
             padding: 12px 16px; color: var(--text-main); font-size: 0.92rem; outline: none;
         }
-
-        input[type="text"]:focus, select:focus {
+        input[type="text"]:focus, select:focus, input[type="number"]:focus {
             border-color: var(--clr-excel); box-shadow: 0 0 0 2px var(--clr-excel-glow);
         }
 
@@ -74,7 +94,6 @@
             background: rgba(16, 185, 129, 0.02); cursor: pointer; margin-bottom: 15px;
         }
         .upload-zone:hover { border-color: var(--clr-excel); background: rgba(16, 185, 129, 0.05); }
-
         .upload-zone input[type="file"] {
             position: absolute; top:0; left:0; width:100%; height:100%; opacity:0; cursor:pointer;
         }
@@ -96,14 +115,20 @@
         @keyframes spin { to { transform: rotate(360deg); } }
 
         .helper-text { font-size: 0.78rem; color: var(--text-muted); margin-top: 6px; display: block; }
+        .hidden-element { display: none !important; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div class="header-bar">
-        <h1>📊 Excel Dataset Benchmark Studio</h1>
+        <h1 id="page-title">📊 Excel Dataset Benchmark Studio</h1>
         <a href="/" class="back-link">← Back to Manual Studio</a>
+    </div>
+
+    <div class="tabs-nav">
+        <button type="button" class="tab-btn active-img" id="tab-image-mode" onclick="setExcelMode('excel_image')">📷 Image Dataset Benchmark</button>
+        <button type="button" class="tab-btn" id="tab-video-mode" onclick="setExcelMode('excel_video')">🎬 Video Dataset Benchmark</button>
     </div>
 
     <div id="loading-block" class="glass-card" style="display: none; text-align: center; padding: 40px;">
@@ -113,21 +138,22 @@
     </div>
 
     <form id="excel-form" class="glass-card">
-        
+        <input type="hidden" id="processing_mode" value="excel_image">
+
         <div class="upload-zone">
-            <span id="file-label" style="font-weight: 700; font-size: 1.05rem; color: var(--clr-excel); display: block;">Drop `.xlsx` dataset file here or click to browse</span>
-            <span class="helper-text">Parses columns dynamically on selection</span>
+            <span id="file-label" style="font-weight: 700; font-size: 1.05rem; color: var(--clr-excel); display: block;">Drop `.xlsx` or `.csv` dataset file here</span>
+            <span class="helper-text">Parses column headers dynamically on upload</span>
             <input type="file" id="excel_file" accept=".xlsx, .xls, .csv" required>
         </div>
 
         <div>
-            <label>Image Assets Directory Path</label>
-            <input type="text" id="excel_image_dir" required placeholder="e.g., C:/Datasets/Robotics_Images/ or ../static/uploads/">
+            <label id="dir-label">Image Assets Directory Path</label>
+            <input type="text" id="excel_media_dir" required placeholder="e.g., C:/Datasets/Media/ or ../static/uploads/">
         </div>
 
         <div class="grid-2">
             <div>
-                <label>Image Filename Column</label>
+                <label id="filename-col-label">Image Filename Column</label>
                 <select id="excel_col_filename" required>
                     <option value="">Upload dataset file to extract columns...</option>
                 </select>
@@ -148,24 +174,24 @@
         </div>
 
         <div>
-            <label style="color: var(--clr-excel);">Preserve Extra Dataset Columns (Optional)</label>
-            <select id="excel_extra_cols" multiple style="height: 100px; font-family: monospace;">
-                <!-- Populated dynamically -->
+            <label style="color: var(--clr-excel);">Preserve Extra Metadata Columns (Optional)</label>
+            <select id="excel_extra_cols" multiple style="height: 90px; font-family: monospace;">
             </select>
-            <span class="helper-text">Hold Ctrl / Cmd to select extra metadata columns to pass into the final output CSV</span>
+            <span class="helper-text">Hold Ctrl / Cmd to pass additional metadata columns into output CSV</span>
         </div>
 
         <div class="grid-2">
             <div>
-                <label>Vision-Language Model</label>
+                <label>Vision-Language Foundation Model</label>
                 <select id="model_name" required>
                     {% for model in models %}
                     <option value="{{ model }}">{{ model }}</option>
                     {% endfor %}
                 </select>
             </div>
-            <div>
-                <label>Global Augmentation Operators</label>
+
+            <div id="image-aug-group">
+                <label>2D Augmentation Operators</label>
                 <select id="augmentation_methods" multiple style="height: 110px; font-family: monospace;">
                     {% for aug in augmentations %}
                     <option value="{{ aug }}">⚡ {{ aug }}</option>
@@ -174,12 +200,58 @@
             </div>
         </div>
 
-        <button type="submit" class="primary-btn">Execute & Download CSV Matrix</button>
+        <div id="video-strategy-group" class="hidden-element">
+            <label>Temporal Keyframe Extraction Strategies</label>
+            <select id="video_sampling_methods" multiple style="height: 140px; font-family: monospace;">
+                {% for key, label in extractions.items() %}
+                <option value="{{ key }}" {% if key == 'bolt' %}selected{% endif %}>🎞️ {{ label }}</option>
+                {% endfor %}
+            </select>
+            <span class="helper-text">Hold Ctrl / Cmd to benchmark multiple keyframe algorithms</span>
+
+            <div style="margin-top: 14px;">
+                <label for="max_frames_video">Maximum Frame Budget (K)</label>
+                <input type="number" id="max_frames_video" value="8" min="1" max="64">
+            </div>
+
+            <label style="margin-top: 16px;">2D Post-Augmentation Matrix (Optional)</label>
+            <select id="augmentation_methods_video" multiple style="height: 110px; font-family: monospace;">
+                {% for aug in augmentations %}
+                <option value="{{ aug }}">⚡ {{ aug }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <button type="submit" class="primary-btn">Execute & Download Benchmark CSV</button>
     </form>
 </div>
 
 <script>
-// Parse columns automatically upon file upload
+function setExcelMode(mode) {
+    const isImage = (mode === 'excel_image');
+    document.getElementById('processing_mode').value = mode;
+
+    document.getElementById('tab-image-mode').className = 'tab-btn' + (isImage ? ' active-img' : '');
+    document.getElementById('tab-video-mode').className = 'tab-btn' + (!isImage ? ' active-vid' : '');
+
+    const imgGroup = document.getElementById('image-aug-group');
+    const vidGroup = document.getElementById('video-strategy-group');
+    const dirLabel = document.getElementById('dir-label');
+    const fnLabel = document.getElementById('filename-col-label');
+
+    if (isImage) {
+        imgGroup.classList.remove('hidden-element');
+        vidGroup.classList.add('hidden-element');
+        dirLabel.textContent = "Image Assets Directory Path";
+        fnLabel.textContent = "Image Filename Column";
+    } else {
+        imgGroup.classList.add('hidden-element');
+        vidGroup.classList.remove('hidden-element');
+        dirLabel.textContent = "Video Assets Directory Path";
+        fnLabel.textContent = "Video Filename Column";
+    }
+}
+
 document.getElementById('excel_file').addEventListener('change', function(e) {
     const file = e.target.files[0];
     if (!file) return;
@@ -212,36 +284,57 @@ document.getElementById('excel_file').addEventListener('change', function(e) {
             extraSelect.add(new Option(text, text));
         });
 
-        // Smart auto-select logic matching dataset column names
-        for(let opt of fnSelect.options) if(opt.value.toLowerCase().includes('file') || opt.value.toLowerCase().includes('image')) opt.selected = true;
-        for(let opt of promptSelect.options) if(opt.value.toLowerCase().includes('question') || opt.value.toLowerCase().includes('prompt')) opt.selected = true;
-        for(let opt of gtSelect.options) if(opt.value.toLowerCase().includes('final') || opt.value.toLowerCase().includes('truth')) opt.selected = true;
+        for(let opt of fnSelect.options) {
+            const v = opt.value.toLowerCase();
+            if(v.includes('file') || v.includes('image') || v.includes('video') || v.includes('clip')) opt.selected = true;
+        }
+        for(let opt of promptSelect.options) {
+            const v = opt.value.toLowerCase();
+            if(v.includes('question') || v.includes('prompt') || v.includes('query')) opt.selected = true;
+        }
+        for(let opt of gtSelect.options) {
+            const v = opt.value.toLowerCase();
+            if(v.includes('final') || v.includes('truth') || v.includes('answer') || v.includes('gt')) opt.selected = true;
+        }
     };
     reader.readAsArrayBuffer(file);
 });
 
-// Form Submission handling
 document.getElementById('excel-form').addEventListener('submit', async function(e) {
     e.preventDefault();
     
+    const mode = document.getElementById('processing_mode').value;
     const formData = new FormData();
-    formData.append('processing_mode', 'excel');
+    formData.append('processing_mode', mode);
     formData.append('excel_file', document.getElementById('excel_file').files[0]);
-    formData.append('excel_image_dir', document.getElementById('excel_image_dir').value);
+    formData.append('excel_image_dir', document.getElementById('excel_media_dir').value);
     formData.append('excel_col_filename', document.getElementById('excel_col_filename').value);
     formData.append('excel_col_prompt', document.getElementById('excel_col_prompt').value);
     formData.append('excel_col_gt', document.getElementById('excel_col_gt').value);
     formData.append('model_name', document.getElementById('model_name').value);
 
-    // Append extra selected columns
     const extraSelect = document.getElementById('excel_extra_cols');
     for (let opt of extraSelect.options) {
         if (opt.selected) formData.append('excel_extra_cols', opt.value);
     }
 
-    const augSelect = document.getElementById('augmentation_methods');
-    for (let opt of augSelect.options) {
-        if (opt.selected) formData.append('augmentation_methods', opt.value);
+    if (mode === 'excel_image') {
+        const augSelect = document.getElementById('augmentation_methods');
+        for (let opt of augSelect.options) {
+            if (opt.selected) formData.append('augmentation_methods', opt.value);
+        }
+    } else {
+        const samplingSelect = document.getElementById('video_sampling_methods');
+        for (let opt of samplingSelect.options) {
+            if (opt.selected) formData.append('video_sampling_methods', opt.value);
+        }
+
+        formData.append('max_frames_video', document.getElementById('max_frames_video').value || "8");
+
+        const vidAugSelect = document.getElementById('augmentation_methods_video');
+        for (let opt of vidAugSelect.options) {
+            if (opt.selected) formData.append('augmentation_methods_video', opt.value);
+        }
     }
 
     document.getElementById('excel-form').style.display = 'none';
@@ -249,6 +342,16 @@ document.getElementById('excel-form').addEventListener('submit', async function(
 
     try {
         const response = await fetch('/process', { method: 'POST', body: formData });
+        
+        if (!response.ok) {
+            const errText = await response.text();
+            console.error("Server HTTP Error:", response.status, errText);
+            alert(`Server Error (${response.status}):\n${errText}`);
+            document.getElementById('excel-form').style.display = 'block';
+            document.getElementById('loading-block').style.display = 'none';
+            return;
+        }
+
         const reader = response.body.getReader();
         const decoder = new TextDecoder();
         let buffer = '';
@@ -268,6 +371,7 @@ document.getElementById('excel-form').addEventListener('submit', async function(
                     if (data.startsWith('DOWNLOAD_TOKEN:')) {
                         downloadToken = data.split(':')[1];
                     } else {
+                        console.log("Progress:", data);
                         document.getElementById('status-text').textContent = data;
                     }
                 }
@@ -275,13 +379,15 @@ document.getElementById('excel-form').addEventListener('submit', async function(
         }
 
         if (downloadToken) {
-            document.getElementById('status-text').textContent = "Batch complete! Triggering CSV download...";
+            document.getElementById('status-text').textContent = "Benchmark complete! Downloading results CSV...";
             window.location.href = `/download_csv/${downloadToken}`;
             setTimeout(() => location.reload(), 3000);
         }
     } catch (err) {
-        alert("Server communication error.");
-        location.reload();
+        console.error("Fetch Error:", err);
+        alert("Server communication error: " + err.message);
+        document.getElementById('excel-form').style.display = 'block';
+        document.getElementById('loading-block').style.display = 'none';
     }
 });
 </script>
