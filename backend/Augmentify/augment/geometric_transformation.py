@@ -1,3 +1,5 @@
+"""Apply configurable flipping and rotation transformations to an image."""
+
 import cv2
 import numpy as np
 from PIL import Image

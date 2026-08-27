@@ -1,3 +1,5 @@
+"""Use CLIPSeg prompt saliency to crop an image around the relevant region."""
+
 import cv2
 import torch
 import numpy as np

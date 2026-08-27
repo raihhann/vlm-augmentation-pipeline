@@ -7,3 +7,5 @@ models/
 # Ignore uploaded media files but keep the directory
 static/uploads/*
 static/cache/*
+
+backend/__pycache__/

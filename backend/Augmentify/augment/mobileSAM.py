@@ -1,3 +1,5 @@
+"""Segment image objects with MobileSAM and render the detected masks."""
+
 import os
 import cv2
 import numpy as np

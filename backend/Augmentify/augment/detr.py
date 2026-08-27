@@ -1,3 +1,5 @@
+"""Detect and annotate image objects with an Ultralytics RT-DETR model."""
+
 import os
 import cv2
 import numpy as np

@@ -1,5 +1,5 @@
-# model_manager.py
-# This file will later handle loading and switching between models
+"""Manage preloading of locally hosted Ollama models for inference requests."""
+
 import ollama
 
 class ModelManager:

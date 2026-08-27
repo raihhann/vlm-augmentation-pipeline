@@ -1,3 +1,9 @@
+"""Run vision-language model inference through the local Ollama service.
+
+The public helper accepts an image path and prompt, handles the supported model
+selection, and returns the generated textual description.
+"""
+
 import os
 from PIL import Image
 import ollama

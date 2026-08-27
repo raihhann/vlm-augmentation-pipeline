@@ -1,3 +1,5 @@
+"""Apply the module's fixed stylizing filter and return an augmented image collage."""
+
 import cv2
 import numpy as np
 from PIL import Image

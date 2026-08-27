@@ -1,3 +1,5 @@
+"""Apply a horizontal shear transformation to an image."""
+
 import cv2
 import numpy as np
 from PIL import Image

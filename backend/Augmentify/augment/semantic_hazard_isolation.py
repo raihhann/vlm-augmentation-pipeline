@@ -1,3 +1,5 @@
+"""Identify prompt-related hazard regions with CLIPSeg and isolate them visually."""
+
 import cv2
 import torch
 import numpy as np

@@ -1,3 +1,5 @@
+"""Locate a prompt-named visual region with CLIPSeg and create a padded zoom."""
+
 import cv2
 import torch
 import numpy as np

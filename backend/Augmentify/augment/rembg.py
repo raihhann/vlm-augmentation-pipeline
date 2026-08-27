@@ -1,3 +1,5 @@
+"""Remove image backgrounds with rembg and return a composited result image."""
+
 from time import time
 
 import cv2

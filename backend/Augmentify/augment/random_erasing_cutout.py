@@ -1,3 +1,5 @@
+"""Erase a random image patch with a configurable fill value."""
+
 import cv2
 import numpy as np
 from PIL import Image

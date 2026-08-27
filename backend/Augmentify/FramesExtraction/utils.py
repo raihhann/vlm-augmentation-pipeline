@@ -1,6 +1,7 @@
-"""
-Utility functions for video frame decoding, file persistence, 
-and cached deep multimodal feature extraction.
+"""Share video sampling, selected-frame persistence, and cached CLIP utilities.
+
+Extraction strategies use these helpers to decode candidate frames uniformly,
+write results to disk, and obtain normalized image or prompt embeddings.
 """
 
 import os

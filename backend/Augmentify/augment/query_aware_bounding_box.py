@@ -1,3 +1,5 @@
+"""Extract a visual query and draw a CLIPSeg-based region-of-interest box."""
+
 import cv2
 import torch
 import numpy as np

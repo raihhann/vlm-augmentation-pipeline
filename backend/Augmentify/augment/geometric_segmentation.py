@@ -1,3 +1,5 @@
+"""Run YOLO segmentation and render detected geometric regions on the image."""
+
 import os
 import cv2
 import numpy as np

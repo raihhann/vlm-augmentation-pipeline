@@ -1,3 +1,5 @@
+"""Estimate monocular depth using the locally configured ZoeDepth model."""
+
 import cv2
 import torch
 import numpy as np

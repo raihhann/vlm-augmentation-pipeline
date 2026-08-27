@@ -1,3 +1,5 @@
+"""Distort image perspective by perturbing its corner coordinates."""
+
 import cv2
 import numpy as np
 from PIL import Image

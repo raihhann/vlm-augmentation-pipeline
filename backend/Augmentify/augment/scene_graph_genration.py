@@ -1,3 +1,5 @@
+"""Generate visual scene-graph collages from YOLO-World detections and REACT++ relations."""
+
 import os
 import io
 import cv2

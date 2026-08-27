@@ -1,5 +1,8 @@
-# augmentation.py
-# This module will later contain real augmentation logic
+"""Dispatch configured image augmentations and return processed PIL images.
+
+The module provides the integration point used by the web service and currently
+routes enabled methods to their corresponding Augmentify implementations.
+"""
 
 from PIL import Image
 from Augmentify.augment.fastSAM import run_fastsam
@@ -33,7 +36,7 @@ from Augmentify.augment.fastSAM import run_fastsam
 # from Augmentify.augment.test_time_augmentation import run_test_time_augmentation
 # from Augmentify.augment.query_aware_bounding_box import run_query_aware_bounding_box
 # from Augmentify.augment.semantic_hazard_isolation import run_semantic_hazard_isolation
-# from Augmentify.augment.perception_metric_grounding import run_perception_metric_grounding
+from Augmentify.augment.perception_metric_grounding import run_perception_metric_grounding
 from Augmentify.augment.scene_graph_genration import run_scene_graph_generator
 
 def apply_augmentation(image: Image.Image, method: str, prompt: str) -> Image.Image:
@@ -143,8 +146,8 @@ def apply_augmentation(image: Image.Image, method: str, prompt: str) -> Image.Im
     # elif method == "SemanticHazardIsolation":
     #     return run_semantic_hazard_isolation(image)
 
-    # elif method == "PerceptionMetricGrounding":
-    #     return run_perception_metric_grounding(image)
+    elif method == "PerceptionMetricGrounding":
+        return run_perception_metric_grounding(image)
 
     elif method == "SceneGraphGeneration":
         return run_scene_graph_generator(image)

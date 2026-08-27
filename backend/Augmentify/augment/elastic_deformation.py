@@ -1,3 +1,5 @@
+"""Apply smooth random elastic warping to an image using Gaussian displacement fields."""
+
 import cv2
 import numpy as np
 from PIL import Image

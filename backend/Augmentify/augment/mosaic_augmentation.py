@@ -1,3 +1,5 @@
+"""Create a mosaic-style image transformation from resized image tiles."""
+
 import cv2
 import numpy as np
 from PIL import Image

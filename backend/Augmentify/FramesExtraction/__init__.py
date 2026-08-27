@@ -1,6 +1,7 @@
-"""
-Augmentify Keyframe Extraction Module:
-Provides a unified interface across all 18 algorithmic and deep learning extraction strategies.
+"""Expose the unified keyframe-extraction interface and registered strategies.
+
+The package maps twenty pixel-, motion-, feature-, and query-aware extractors
+to method names and saves their selected video frames through one entry point.
 """
 
 from typing import List

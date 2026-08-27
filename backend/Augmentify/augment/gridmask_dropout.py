@@ -1,3 +1,5 @@
+"""Mask regularly spaced image regions using the GridMask dropout augmentation."""
+
 import cv2
 import numpy as np
 from PIL import Image

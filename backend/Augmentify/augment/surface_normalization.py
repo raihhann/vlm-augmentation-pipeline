@@ -1,3 +1,5 @@
+"""Estimate surface normals or depth-derived surface structure with a transformer pipeline."""
+
 import cv2
 import numpy as np
 import os

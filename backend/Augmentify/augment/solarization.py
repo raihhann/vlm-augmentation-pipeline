@@ -1,3 +1,5 @@
+"""Invert pixels above a threshold to simulate photographic solarization."""
+
 import cv2
 import numpy as np
 from PIL import Image

@@ -1,3 +1,5 @@
+"""Overlay prompt-grounded object detections and depth-derived perception metrics."""
+
 import cv2
 import torch
 import numpy as np
@@ -92,4 +94,4 @@ def run_perception_metric_grounding(image, prompt="", save_output=False, output_
     collage = np.vstack((orig_resized, annot_resized))
 
     print("Perception Metric Grounding completed.")
-    return Image.fromarray(cv2.cvtColor(collage, cv2.COLOR_BGR2RGB))
+    return Image.fromarray(cv2.cvtColor(augmented, cv2.COLOR_BGR2RGB))

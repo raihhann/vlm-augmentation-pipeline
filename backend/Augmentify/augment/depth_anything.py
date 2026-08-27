@@ -1,3 +1,5 @@
+"""Estimate monocular depth with the Hugging Face Depth Anything pipeline."""
+
 import cv2
 import numpy as np
 import os

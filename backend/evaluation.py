@@ -1,13 +1,7 @@
-# evaluation.py
-"""
-Evaluation module for comparing model outputs.
+"""Compute and aggregate metrics for comparing baseline and augmented outputs.
 
-Measures:
-- Latency (inference time in milliseconds)
-- Semantic similarity (BERTScore F1)
-- Surface-level n-gram overlap (BLEU)
-- Visual-Spatial Grounding (CLIPScore with w=2.5)
-- Token statistics
+The module lazily caches BERTScore and CLIP resources, then reports text
+similarity, image-text grounding, latency differences, and token counts.
 """
 
 import os

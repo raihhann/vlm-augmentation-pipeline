@@ -1,6 +1,7 @@
-"""
-SSIM Perceptual Thresholding:
-Calculates structural similarity across consecutive frames, retaining frames where visual degradation exceeds the threshold.
+"""Select frames whose structural similarity to the previous selected frame falls below a threshold.
+
+The extractor samples candidate frames, keeps the first frame, and persists
+subsequent frames that represent a sufficiently large visual change.
 """
 
 from typing import List

@@ -1,3 +1,5 @@
+"""Detect human poses with YOLO and draw keypoints and skeleton annotations."""
+
 import os
 import cv2
 import numpy as np

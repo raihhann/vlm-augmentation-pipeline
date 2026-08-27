@@ -1,3 +1,5 @@
+"""Randomly crop an image and resize the crop back to the original dimensions."""
+
 import cv2
 import numpy as np
 from PIL import Image

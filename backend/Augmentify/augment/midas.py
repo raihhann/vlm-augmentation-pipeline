@@ -1,4 +1,6 @@
 # midas.py
+"""Estimate relative monocular depth using the locally configured MiDaS model."""
+
 import cv2
 import torch
 import numpy as np

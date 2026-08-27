@@ -1,4 +1,5 @@
-# yolo_world_annotate.py
+"""Apply contrast and rotation, then annotate open-vocabulary objects with YOLO-World."""
+
 import os
 import cv2
 import numpy as np

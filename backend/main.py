@@ -1,3 +1,10 @@
+"""Serve the web interface and execute image and video evaluation workflows.
+
+This FastAPI application accepts uploaded media or spreadsheet datasets,
+applies augmentations and keyframe extractors, streams progress, and exports
+the resulting evaluation matrices as HTML, CSV, or Excel reports.
+"""
+
 import asyncio
 from io import BytesIO
 import os

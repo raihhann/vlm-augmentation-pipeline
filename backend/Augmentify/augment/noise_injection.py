@@ -1,3 +1,5 @@
+"""Add configurable random noise to an image for robustness evaluation."""
+
 import cv2
 import numpy as np
 from PIL import Image

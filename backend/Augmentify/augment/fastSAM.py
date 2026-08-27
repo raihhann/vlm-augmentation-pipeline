@@ -1,3 +1,5 @@
+"""Segment image regions with FastSAM and return a mask-and-box annotation collage."""
+
 import os
 import cv2
 import numpy as np

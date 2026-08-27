@@ -1,7 +1,7 @@
-"""
-Signal Peak Detection (Native OpenCV + SciPy):
-Treats inter-frame pixel differences across the video timeline as a continuous 1D signal
-and extracts keyframes located at local prominence peaks.
+"""Extract keyframes at prominent peaks in an inter-frame pixel-difference signal.
+
+OpenCV grayscale differences are analyzed with SciPy peak detection, with a
+highest-difference fallback when no local peaks meet the prominence threshold.
 """
 
 from typing import List

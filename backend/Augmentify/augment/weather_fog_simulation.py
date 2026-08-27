@@ -1,3 +1,5 @@
+"""Blend atmospheric haze into images to simulate configurable fog conditions."""
+
 import cv2
 import numpy as np
 from PIL import Image

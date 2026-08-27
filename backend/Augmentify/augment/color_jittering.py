@@ -1,3 +1,5 @@
+"""Adjust image brightness and contrast and produce an original-result collage."""
+
 import cv2
 import numpy as np
 from PIL import Image

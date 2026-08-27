@@ -1,3 +1,5 @@
+"""Provide gamma, CLAHE, Retinex, and logarithmic illumination corrections."""
+
 import cv2
 import numpy as np
 from PIL import Image
