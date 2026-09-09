@@ -24,7 +24,7 @@ from ultralytics import YOLOWorld
 # Define the absolute path to the YOLO-World weights
 model_path = os.path.join(model_folder, 'yolov8s-world.pt')
 
-print(f"🛠️ Loading YOLO-World from: {model_path}")
+print(f" Loading YOLO-World from: {model_path}")
 
 # Load the model using the absolute path
 yolo_world_model = YOLOWorld(model_path)
@@ -56,7 +56,7 @@ def annotate(image, output_path: str = None):
     elif isinstance(image, str):
         image = cv2.imread(image)
         if image is None:
-            print(f"❌ Error: Image '{image}' not found.")
+            print(f" Error: Image '{image}' not found.")
             return None
     # else assume it's already a NumPy BGR array
 
@@ -73,7 +73,7 @@ def annotate(image, output_path: str = None):
     rows, cols = aug_image.shape[:2]
     rotation_matrix = cv2.getRotationMatrix2D((cols/2, rows/2), 2, 1)
     aug_image = cv2.warpAffine(aug_image, rotation_matrix, (cols, rows))
-    print("✅ Image Augmented (Contrast Boost + Rotation applied)")
+    print(" Image Augmented (Contrast Boost + Rotation applied)")
 
     # --- STEP 2: SEMANTIC DETECTION ---
     results = yolo_world_model.predict(aug_image, conf=0.1, verbose=False)[0]
@@ -107,7 +107,7 @@ def annotate(image, output_path: str = None):
     # --- STEP 4: OPTIONAL SAVE ---
     if output_path is not None:
         cv2.imwrite(output_path, annotated_frame)
-        print(f"🚀 Success! Saved annotated image to: {output_path}")
+        print(f" Success! Saved annotated image to: {output_path}")
 
     # -------- COLLAGE PART --------
     h, w = image.shape[:2]

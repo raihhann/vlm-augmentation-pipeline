@@ -5,10 +5,27 @@ import numpy as np
 from PIL import Image
 
 def run_color_jittering(image, brightness=30, contrast=1.3, save_output=False, output_path=None):
-    """
-    Adjusts brightness and contrast of the input image.
-    brightness: -100 to 100
-    contrast: >0 scale factor (1.0 = normal)
+    """Adjusts brightness and contrast of an input image and returns a collage.
+
+    This function modifies the brightness and contrast of the input image using 
+    OpenCV's convertScaleAbs. It also optionally saves the augmented image, and 
+    returns a vertically stacked collage of the original and modified images.
+
+    Args:
+        image (Union[PIL.Image.Image, numpy.ndarray]): The input image to be 
+            adjusted. Can be a PIL Image or a NumPy array.
+        brightness (int, optional): The brightness adjustment value (typically 
+            between -100 and 100). Defaults to 30.
+        contrast (float, optional): The contrast adjustment scale factor (1.0 
+            means no change, >1 increases contrast). Defaults to 1.3.
+        save_output (bool, optional): If True, saves the augmented image to 
+            `output_path`. Defaults to False.
+        output_path (str, optional): File path where the augmented image should 
+            be saved if `save_output` is True. Defaults to None.
+
+    Returns:
+        PIL.Image.Image: A PIL Image containing the vertically stacked collage 
+            of the resized original and resized augmented images.
     """
     if isinstance(image, Image.Image):
         image = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)

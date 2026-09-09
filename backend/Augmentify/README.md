@@ -1,64 +1,61 @@
-# Augmentify
+# Future Work
 
-`Augmentify` is the research package containing image augmentation algorithms and video keyframe-extraction strategies used by the backend evaluation service.
+This directory is reserved for planned research, prototyping, and engineering 
+extensions to Augmentify. It now contains active exploratory stubs and 
+boilerplate modules for upcoming pipeline upgrades.
 
-## Package responsibilities
+## Purpose
 
-The package is split into two implementation areas:
+Future modules are placed here when their intended behavior needs to be documented 
+and prototyped before full production integration. Modules often begin as exploratory 
+Python files containing a module-level docstring, functional stubs or fallbacks, 
+and clear markers for upcoming enhancements.
 
-- [`augment/`](augment/README.md) contains image transformations, model-based visual analysis, annotation utilities, and proposed robustness augmentations.
-- [`FramesExtraction/`](FramesExtraction/README.md) contains algorithms that select representative frames from videos before VLM inference.
-- [`FutureWork/`](FutureWork/README.md) contains planned extensions, empty module boilerplates, and design notes for work that has not been implemented yet.
+## Current Prototype Modules
 
-The package-level API for video processing is exported from `FramesExtraction`. Image processing is currently routed by `backend/augmentation.py`.
+* **Super Smart Sampling (`super_smart_sampling.py` / sampling stubs):** 
+  * *Purpose:* Designed to optimize video keyframe selection for long, multi-scene videos.
+  * *Current State:* Implements a baseline/fallback selection mechanism with a roadmap to transition into a query-grounded scoring system that minimizes downstream VLM latency.
+* **Adaptive Policy Selection (`run_adaptive_policy_selection`):** 
+  * *Purpose:* Dynamically chooses and executes optimal image augmentation policies based on image contents and text prompts.
+  * *Current State:* Structured as a functional placeholder ready for advanced policy-routing logic.
+* **Lightweight Semantic Evaluation (`evaluate_lightweight_semantics`):** 
+  * *Purpose:* Efficiently scores VLM outputs against ground-truth references without heavy embedding bottlenecks.
+  * *Current State:* Implements a lightweight heuristic stub returning quick pseudo-scores for fast iterative testing.
 
-## How it fits into the backend
+---
 
-The request pipeline in `backend/main.py` follows this general sequence:
+## Candidate Work Areas
 
-1. Receive an uploaded image, video, or dataset row.
-2. Run baseline VLM inference through `backend/inference.py`.
-3. Call an image augmenter from `augment/`, or extract video frames through `FramesExtraction`.
-4. Optionally augment extracted video frames.
-5. Run VLM inference on the processed media.
-6. Compare both responses with `backend/evaluation.py`.
+* Complete and stabilize the image augmentation dispatcher so all verified augmenters can be selected safely.
+* Add additional proposed augmentations and compare them against established transformations.
+* Improve video keyframe selection for long, multi-scene, and query-specific videos using advanced sampling strategies.
+* Add batch-run reproducibility through explicit random seeds and persisted experiment configuration.
+* Move session storage from process memory to a durable experiment-result store.
+* Add validation, error reporting, and cleanup for uploaded media and generated model outputs.
+* Expand automated tests for image contracts, extractor edge cases, metrics, and API workflows.
+* Improve dashboard comparison views and expose all backend metrics consistently.
+* Add experiment metadata, aggregate statistics, and repeat-run confidence analysis.
 
-## Image augmentation contract
+*Note: These are planning topics and active prototyping areas, not strict promises about current production functionality. Proposals must be validated against current API and model constraints before full implementation.*
 
-Most image functions accept a PIL image or an OpenCV/NumPy image, perform one transformation or model-based annotation, and return a PIL image. Several functions also support optional output persistence through `save_output` and `output_path`.
+---
 
-The dispatcher does not currently expose every implementation in the folder. Check `backend/config.py` and `backend/augmentation.py` before treating an algorithm as selectable from the UI.
+## Suggested Boilerplate Structure
 
-## Video extraction contract
-
-The extraction package exposes:
+When introducing a new experimental file, follow this layout:
 
 ```python
-from Augmentify.FramesExtraction import extract_frames
+"""Describe the planned method, research purpose, inputs, outputs, and dependencies.
 
-paths = extract_frames(
-	video_path="input.mp4",
-	method="bolt",
-	max_frames=8,
-	prompt="describe the road signs",
-	output_folder="output_frames",
-)
+Implementation status: exploratory / planned.
+"""
+
+
+def run_planned_method(image, **kwargs):
+    """Return the documented result or prototype fallback once the method is drafted."""
+    print("Executing exploratory placeholder routine...")
+    return image
 ```
 
-Each registered strategy returns a list of saved frame paths. Shared decoding, persistence, and CLIP embedding behavior lives in [`FramesExtraction/utils.py`](FramesExtraction/utils.py).
-
-## Model and resource considerations
-
-Some modules load neural network weights at import time, while others initialize models lazily. This can make importing a module expensive and can require local files under the repository `models/` directory. Keep model paths and cache behavior in mind when adding a new method.
-
-## Adding a new method
-
-For a new image augmenter:
-
-1. Add the implementation under `augment/`.
-2. Add a module-level docstring describing its purpose and model requirements.
-3. Add a dispatcher branch in `backend/augmentation.py`.
-4. Add the user-facing name to `backend/config.py` only when the branch is usable.
-5. Run a small image experiment and verify that the return type is compatible with the backend.
-
-For a new frame extractor, follow the package guidance in [`FramesExtraction/README.md`](FramesExtraction/README.md), then register the method in `FramesExtraction/__init__.py` and `backend/config.py`.
+When a module becomes fully production-ready, move it to the appropriate core implementation folder, add comprehensive unit tests, register it in the corresponding dispatcher or extractor registry, and update the main documentation files.

@@ -9,10 +9,12 @@ import time
 from typing import Optional, Union, Tuple
 import torch
 import torch.nn.functional as F
+import random
 from PIL import Image
 from bert_score import BERTScorer
 from nltk.translate.bleu_score import sentence_bleu, SmoothingFunction
 from transformers import CLIPModel, CLIPProcessor
+import Augmentify.FutureWork.light_eval as light_eval
 
 # ==========================================
 # Global Caches for Lazy-Loaded Models
@@ -170,6 +172,19 @@ def compute_token_count(text: str) -> int:
     """Basic whitespace token count."""
     return len(text.split())
 
+# ==========================================
+# Future Work: Placeholder for future adaptive and query-aware extraction methods
+# ==========================================
+def evaluate_lightweight_semantics(prediction: str, ground_truth: str) -> float:
+    """Evaluate VLM semantic alignment using a lightweight heuristic approach.
+
+    [FUTURE WORK]: Develop and integrate a lightweight semantic understanding 
+    evaluation method to efficiently score VLM outputs against ground truths 
+    without incurring heavy embedding or compute bottlenecks.
+    """
+    return light_eval.evaluate_lightweight_semantics(prediction, ground_truth)
+
+
 
 # ==========================================
 # Main Evaluation Pipeline
@@ -202,6 +217,9 @@ def evaluate_outputs(
     token_count_original = compute_token_count(original_output)
     token_count_augmented = compute_token_count(augmented_output)
 
+    #5. Future Work: Lightweight Semantic Evaluation
+    semantic_score = evaluate_lightweight_semantics(augmented_output, ground_truth)
+
     latency_diff = compute_latency_difference(
         inference_time_original,
         inference_time_augmented
@@ -216,5 +234,7 @@ def evaluate_outputs(
         "augmented_clip_score": augmented_clip_score,
         "token_count_original": token_count_original,
         "token_count_augmented": token_count_augmented,
-        "latency_diff": latency_diff
+        "latency_diff": latency_diff,
+        "FutureWork : semantic_score": semantic_score
+
     }

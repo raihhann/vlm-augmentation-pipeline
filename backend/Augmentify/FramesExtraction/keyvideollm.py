@@ -17,6 +17,18 @@ def extract_keyframes(
     output_folder: str = "output_keyvideollm",
     **kwargs,
 ) -> List[str]:
+    """Extract keyframes from the input data.
+
+    Args:
+        video_path (str): Description of the parameter.
+        prompt (str): Description of the parameter.
+        max_frames (int): Description of the parameter.
+        output_folder (str): Description of the parameter.
+        kwargs: Additional keyword arguments for the operation.
+
+    Returns:
+        list[str]: The extracted frame paths or keyframe results.
+    """    
     frames, _ = load_candidate_frames(video_path)
     if len(frames) <= max_frames:
         return save_extracted_frames(frames, output_folder, prefix="keyvideollm")

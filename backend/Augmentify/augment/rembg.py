@@ -9,6 +9,16 @@ from rembg import remove
 import time
 
 def run_rembg(image, save_output=False, output_path=None):
+    """Run rembg on the provided input.
+
+    Args:
+        image: Description of the parameter.
+        save_output: Description of the parameter.
+        output_path: Description of the parameter.
+
+    Returns:
+        numpy.ndarray: The processed image or output result.
+    """    
     start_aug = time.time()
     """
     Runs saliency-based foreground extraction using rembg.

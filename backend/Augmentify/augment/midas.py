@@ -36,7 +36,7 @@ def run_midas_depth(image, output_path: str = None):
     elif isinstance(image, str):
         image = cv2.imread(image)
         if image is None:
-            print("❌ Image not found")
+            print(" Image not found")
             return None
     # else assume it's already a NumPy BGR array
 
@@ -81,7 +81,7 @@ def run_midas_depth(image, output_path: str = None):
     # Save if requested
     if output_path is not None:
         collage_pil.save(output_path)
-        print(f"✅ Saved depth image to: {output_path}")
+        print(f" Saved depth image to: {output_path}")
 
     print("MiDaS depth estimation completed.")
 

@@ -26,10 +26,10 @@ from ultralytics import FastSAM
 model_path = os.path.join(model_folder, 'FastSAM-x.pt')
 
 # Print to your console to verify during startup
-print(f"🛠️ Loading FastSAM from: {model_path}")
+print(f" Loading FastSAM from: {model_path}")
 
 if not os.path.exists(model_path):
-    print(f"⚠️ WARNING: Model not found at {model_path}! It will download to this location.")
+    print(f" WARNING: Model not found at {model_path}! It will download to this location.")
 
 fastsam_model = FastSAM(model_path)
 

@@ -23,7 +23,7 @@ from ultralytics import YOLO
 # Define the absolute path to the segmentation weights
 model_path = os.path.join(model_folder, 'yolov8n-seg.pt')
 
-print(f"🛠️ Loading YOLOv8-Seg from: {model_path}")
+print(f" Loading YOLOv8-Seg from: {model_path}")
 
 # Load the model using the absolute path
 seg_model = YOLO(model_path)

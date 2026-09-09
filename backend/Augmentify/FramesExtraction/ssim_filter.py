@@ -19,6 +19,18 @@ def extract_keyframes(
     threshold: float = 0.70,
     **kwargs,
 ) -> List[str]:
+    """Extract keyframes from the input data.
+
+    Args:
+        video_path (str): Description of the parameter.
+        max_frames (int): Description of the parameter.
+        output_folder (str): Description of the parameter.
+        threshold (float): Description of the parameter.
+        kwargs: Additional keyword arguments for the operation.
+
+    Returns:
+        list[str]: The extracted frame paths or keyframe results.
+    """    
     frames, _ = load_candidate_frames(video_path)
     selected, prev_gray = [], None
     for frame in frames:

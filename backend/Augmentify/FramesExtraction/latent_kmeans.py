@@ -17,6 +17,23 @@ def extract_keyframes(
     output_folder: str = "output_latent_kmeans",
     **kwargs,
 ) -> List[str]:
+    """Extracts keyframes from a video using K-Means clustering on visual embeddings.
+
+    This function extracts candidate frames, computes their CLIP embeddings,
+    clusters the embeddings into `max_frames` clusters using K-Means, and selects
+    the closest medoid frame for each cluster. If the total number of candidate
+    frames is less than or equal to `max_frames`, all candidate frames are returned.
+
+    Args:
+        video_path: Path to the input video file.
+        max_frames: Maximum number of keyframes to extract. Defaults to 8.
+        output_folder: Path to the directory where extracted keyframes will be saved.
+            Defaults to "output_latent_kmeans".
+        **kwargs: Additional keyword arguments.
+
+    Returns:
+        List[str]: A list of file paths to the saved keyframes.
+    """
     frames, _ = load_candidate_frames(video_path)
     if len(frames) <= max_frames:
         return save_extracted_frames(frames, output_folder, prefix="kmeans")

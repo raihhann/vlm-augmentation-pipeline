@@ -6,6 +6,17 @@ from PIL import Image
 
 # 1. Gamma Correction
 def run_gamma_correction(image, gamma=1.5, save_output=False, output_path=None):
+    """Run gamma correction on the provided input.
+
+    Args:
+        image: Description of the parameter.
+        gamma: Description of the parameter.
+        save_output: Description of the parameter.
+        output_path: Description of the parameter.
+
+    Returns:
+        numpy.ndarray: The processed image or output result.
+    """    
     if isinstance(image, Image.Image):
         image = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
 
@@ -30,6 +41,18 @@ def run_gamma_correction(image, gamma=1.5, save_output=False, output_path=None):
 
 # 2. CLAHE (Contrast Limited Adaptive Histogram Equalization)
 def run_clahe(image, clip_limit=2.0, tile_grid_size=(8, 8), save_output=False, output_path=None):
+    """Run clahe on the provided input.
+
+    Args:
+        image: Description of the parameter.
+        clip_limit: Description of the parameter.
+        tile_grid_size: Description of the parameter.
+        save_output: Description of the parameter.
+        output_path: Description of the parameter.
+
+    Returns:
+        numpy.ndarray: The processed image or output result.
+    """    
     if isinstance(image, Image.Image):
         image = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
 
@@ -56,6 +79,17 @@ def run_clahe(image, clip_limit=2.0, tile_grid_size=(8, 8), save_output=False, o
 
 # 3. Retinex SSR (Single Scale Retinex)
 def run_retinex_ssr(image, sigma=15, save_output=False, output_path=None):
+    """Run retinex ssr on the provided input.
+
+    Args:
+        image: Description of the parameter.
+        sigma: Description of the parameter.
+        save_output: Description of the parameter.
+        output_path: Description of the parameter.
+
+    Returns:
+        numpy.ndarray: The processed image or output result.
+    """    
     if isinstance(image, Image.Image):
         image = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
 
@@ -89,6 +123,17 @@ def run_retinex_ssr(image, sigma=15, save_output=False, output_path=None):
 
 # 4. Log Transform
 def run_log_transform(image, c=None, save_output=False, output_path=None):
+    """Run log transform on the provided input.
+
+    Args:
+        image: Description of the parameter.
+        c: Description of the parameter.
+        save_output: Description of the parameter.
+        output_path: Description of the parameter.
+
+    Returns:
+        numpy.ndarray: The processed image or output result.
+    """    
     if isinstance(image, Image.Image):
         image = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
 

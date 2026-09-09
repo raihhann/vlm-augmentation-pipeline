@@ -26,6 +26,8 @@ from .ssim_filter import extract_keyframes as extract_ssim
 from .tsdpc import extract_keyframes as extract_tsdpc
 from .query_aware_iframes import extract_keyframes as extract_qa_iframes
 from .smart_sampling import extract_keyframes as extract_smart_sampling
+from ..FutureWork.super_smart_sampling import extract_keyframes as extract_super_smart_sampling
+
 
 FRAME_EXTRACTORS = {
     "iframes": extract_iframes,
@@ -48,6 +50,8 @@ FRAME_EXTRACTORS = {
     "bolt": extract_bolt,
     "qa_iframes": extract_qa_iframes,
     "smart_sampling": extract_smart_sampling,
+    # Future Work: Placeholder for future adaptive and query-aware extraction methods
+    "super_smart_sampling": extract_super_smart_sampling,
 }
 
 

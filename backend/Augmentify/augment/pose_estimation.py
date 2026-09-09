@@ -23,7 +23,7 @@ from ultralytics import YOLO
 # Define the absolute path to the pose weights
 model_path = os.path.join(model_folder, 'yolov8n-pose.pt')
 
-print(f"🛠️ Loading YOLOv8-Pose from: {model_path}")
+print(f" Loading YOLOv8-Pose from: {model_path}")
 
 # Load the Pose model using the absolute path
 pose_model = YOLO(model_path)

@@ -12,6 +12,22 @@ import ollama
 def run_inference(
     model: str, image_input: str, prompt: str, type: str
 ) -> str:
+
+  """Execute vision-language model inference via the local Ollama service.
+
+    Handles path resolution for file strings, web URLs, or PIL Image objects, 
+    applies specialized system instructions for augmented modes, and manages 
+    mock response fallbacks for development and testing.
+
+    Args:
+        model (str): The name of the VLM model to invoke (or a mock identifier).
+        image_input (str | Image.Image): The target file path, web path, or PIL Image.
+        prompt (str): The text query or prompt guiding the model's analysis.
+        type (str): The inference execution context/mode (e.g., "original", "augmented").
+
+    Returns:
+        str: The generated textual output from the model, a mock response, or an error message.
+    """
   print(f"Running inference with model: {model}, type: {type}")
 
   # ==========================================

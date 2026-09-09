@@ -23,8 +23,7 @@ from ultralytics import SAM
 
 # Define the absolute path to the MobileSAM weights
 model_path = os.path.join(model_folder, 'mobile_sam.pt')
-
-print(f"🛠️ Loading MobileSAM from: {model_path}")
+print(f" Loading MobileSAM from: {model_path}")
 
 # Load the model using the absolute path to prevent stray downloads
 mobile_sam_model = SAM(model_path)
@@ -45,7 +44,7 @@ def run_mobilesam(image, output_path: str = None):
     elif isinstance(image, str):
         image = cv2.imread(image)
         if image is None:
-            print("❌ Image not found")
+            print(" Image not found")
             return None
     # else assume it's already a NumPy BGR array
 
@@ -86,7 +85,7 @@ def run_mobilesam(image, output_path: str = None):
     # Optionally save
     if output_path is not None:
         cv2.imwrite(output_path, annotated_image)
-        print(f"✅ Saved output to: {output_path}")
+        print(f" Saved output to: {output_path}")
 
 # -------- COLLAGE PART --------
 

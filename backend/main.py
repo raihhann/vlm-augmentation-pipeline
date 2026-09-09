@@ -45,6 +45,13 @@ def to_web_url(disk_path: str) -> str:
 
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
+    """Render the main web interface dashboard.
+
+    This endpoint serves the home HTML page, supplying configuration options for
+    models, augmentations, and extractions to the front-end template.
+
+    - **request**: The incoming HTTP request object.
+    """
     return templates.TemplateResponse(
         "index.html",
         {
@@ -58,6 +65,13 @@ async def home(request: Request):
 
 @app.get("/excel_studio", response_class=HTMLResponse)
 async def excel_studio_page(request: Request):
+    """Render the Excel studio evaluation page.
+
+    Serves the specialized template for configuring and managing batch evaluations 
+    using structured spreadsheet datasets.
+
+    - **request**: The incoming HTTP request object.
+    """
     return templates.TemplateResponse(
         "excel_evaluator.html",
         {
@@ -94,6 +108,16 @@ async def process_media_matrix(
     excel_col_gt: Optional[str] = Form(default=None),
     excel_extra_cols: Optional[List[str]] = Form(default=None),
 ):
+    """Execute comprehensive image, video, or spreadsheet evaluation workflows.
+
+    Handles multi-modal inputs, applies augmentations, executes keyframe extractions, 
+    runs model inference, and streams real-time execution progress via Server-Sent Events (SSE).
+
+    - **processing_mode**: Specifies the evaluation pipeline type (`image`, `video`, `excel`, `excel_image`, `excel_video`).
+    - **model_name**: The name of the vision-language model being evaluated.
+    - **image_files** / **video_files**: Optional media files uploaded for manual evaluation modes.
+    - **excel_file**: Optional spreadsheet dataset for automated batch testing.
+    """
     async def batch_event_generator():
         session_token = f"matrix_session_{int(time.time())}"
         GLOBAL_SESSION_STORAGE_MATRIX[session_token] = []
@@ -213,6 +237,7 @@ async def process_media_matrix(
                             "Augmented CLIPScore": eval_res["augmented_clip_score"],
                             "Baseline Tokens": eval_res["token_count_original"],
                             "Augmented Tokens": eval_res["token_count_augmented"],
+                            "FutureWork : semantic_score": eval_res["FutureWork : semantic_score"]
                         }
 
                         GLOBAL_SESSION_STORAGE_MATRIX[session_token].append(row_record)
@@ -380,6 +405,7 @@ async def process_media_matrix(
                                 "Augmented CLIPScore": eval_res["augmented_clip_score"],
                                 "Baseline Tokens": eval_res["token_count_original"],
                                 "Augmented Tokens": eval_res["token_count_augmented"],
+                                "FutureWork : semantic_score": eval_res["FutureWork : semantic_score"]
                             }
 
                             GLOBAL_SESSION_STORAGE_MATRIX[session_token].append(row_record)
@@ -491,6 +517,7 @@ async def process_media_matrix(
                         "processed_clip": eval_res["augmented_clip_score"],
                         "token_original": eval_res["token_count_original"],
                         "token_processed": eval_res["token_count_augmented"],
+                        "semantic_score": eval_res["FutureWork : semantic_score"]
                     })
 
             yield "data: Compiling dashboard metrics results grid matrix views...\n\n"
@@ -643,6 +670,7 @@ async def process_media_matrix(
                             "processed_clip": eval_res["augmented_clip_score"],
                             "token_original": eval_res["token_count_original"],
                             "token_processed": eval_res["token_count_augmented"],
+                            "semantic_score": eval_res["FutureWork : semantic_score"]
                         })
 
             yield "data: Compiling dashboard metrics results grid matrix views...\n\n"
@@ -665,6 +693,13 @@ async def process_media_matrix(
 
 @app.get("/download_csv/{session_token}")
 async def download_csv_report(session_token: str):
+    """Download the batch evaluation results as a CSV file.
+
+    Retrieves cached evaluation records for a given session token and streams them 
+    back to the client as a downloadable CSV spreadsheet.
+
+    - **session_token**: Unique identifier string representing the active evaluation session.
+    """
     cache_img = f"../static/cache/dataset_eval_{session_token}.csv"
     cache_vid = f"../static/cache/video_dataset_eval_{session_token}.csv"
     cache_csv_path = cache_img if os.path.exists(cache_img) else cache_vid
@@ -705,6 +740,13 @@ async def download_csv_report(session_token: str):
 
 @app.get("/download_metrics")
 async def export_excel_metrics_matrix(session_token: str = ""):
+    """Export aggregated evaluation metrics as an Excel report.
+
+    Compiles session metrics data into an `.xlsx` workbook containing performance 
+    metrics, latency differences, token counts, and evaluation scores.
+
+    - **session_token**: Unique identifier string representing the active evaluation session.
+    """
     dataset = GLOBAL_SESSION_STORAGE_MATRIX.get(session_token, [])
     if not dataset:
         return HTMLResponse(
@@ -729,6 +771,7 @@ async def export_excel_metrics_matrix(session_token: str = ""):
         "processed_clip",
         "token_original",
         "token_processed",
+        "semantic_score"
     ]
     valid_cols = [c for c in export_columns if c in df.columns]
     df_filtered = df[valid_cols].copy()

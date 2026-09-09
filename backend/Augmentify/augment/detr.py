@@ -23,7 +23,7 @@ from ultralytics import RTDETR
 # Define the absolute path to the weights file
 model_path = os.path.join(model_folder, 'rtdetr-l.pt')
 
-print(f"🛠️ Loading RT-DETR from: {model_path}")
+print(f" Loading RT-DETR from: {model_path}")
 
 # Load RT-DETR model using the absolute path
 # This forces the library to look in your models folder instead of the root
