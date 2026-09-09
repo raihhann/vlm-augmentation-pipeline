@@ -2,7 +2,7 @@
 
 This repository contains an ongoing University of Stuttgart research prototype for studying how image augmentations and video keyframe-selection strategies affect vision-language model (VLM) outputs. It compares inference on original media with inference on processed media and records linguistic, visual, timing, and token-level metrics.
 
-The project is experimental software rather than a production service. Some modules are complete but not currently exposed in the web UI, some features require large local model weights, and the `FutureWork` directory documents planned extensions.
+The project is experimental software rather than a production service. Some modules are complete but not currently exposed in the web UI, some features require a large local model weights, and the `FutureWork` directory documents planned extensions.
 
 ## What the application does
 
