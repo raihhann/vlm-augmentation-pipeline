@@ -1,54 +1,93 @@
-# Vision-Language Model Augmentation Evaluation Pipeline
+# Vision-Language Model Augmentation & Keyframe Evaluation Pipeline
 
-This repository contains an ongoing University of Stuttgart research prototype for studying how image augmentations and video keyframe-selection strategies affect vision-language model (VLM) outputs. It compares inference on original media with inference on processed media and records linguistic, visual, timing, and token-level metrics.
+[![Live Documentation](https://img.shields.io/badge/docs-live-blue.svg)](https://raihhann.github.io/vlm-augmentation-pipeline/)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/)
+[![Institution](https://img.shields.io/badge/University-Stuttgart-red.svg)](https://www.uni-stuttgart.de/)
+[![License: Research Use](https://img.shields.io/badge/license-Research%20Only-orange.svg)]()
 
-The project is experimental software rather than a production service. Some modules are complete but not currently exposed in the web UI, some features require a large local model weights, and the `FutureWork` directory documents planned extensions.
+<p align="center">
+  <img src="./resources/GIF.gif" alt="System Demonstration GIF" width="100%">
+</p>
 
-## What the application does
+<p align="center">
+  <em>Photo by <a href="https://unsplash.com">Zero</a> on <a href="https://unsplash.com">Unsplash</a></em>
+</p>
 
-The web application supports four related evaluation workflows:
+<p align="center">
+  <a href="./resources/main.pdf"><img src="https://img.shields.io/badge/Paper-PDF-red.svg" alt="Paper"></a>
+  <a href="./resources/Porject Presentation.pptx"><img src="https://img.shields.io/badge/Presentation-Slides-blue.svg" alt="Presentation"></a>
+  <a href="https://raihhann.github.io/vlm-augmentation-pipeline/"><img src="https://img.shields.io/badge/Docs-Live-success.svg" alt="Live Docs"></a>
+</p>
 
-- **Manual image evaluation:** upload multiple images, provide prompts and optional ground-truth descriptions, apply one or more image augmentations, and compare baseline and processed outputs.
-- **Manual video evaluation:** upload videos, select keyframe extraction methods, optionally augment the extracted frames, and evaluate the resulting VLM output.
-- **Excel image-dataset evaluation:** upload a spreadsheet whose rows point to image files, map filename/prompt/ground-truth columns, and run a repeatable augmentation matrix.
-- **Excel video-dataset evaluation:** use spreadsheet rows to run batch video extraction and augmentation experiments.
+---
 
-Progress is streamed to the browser with Server-Sent Events. Results are shown in an evaluation dashboard and can be downloaded as CSV or Excel reports.
+## 🎯 The Problem & Motivation
 
-## Evaluation metrics
+Deploying Vision-Language Models (VLMs) on autonomous mobile robots is severely constrained by the strict computational, memory, and thermal limits of edge hardware. While fine-tuning or retraining foundation models for adverse operational environments is impractical on embedded platforms, compact edge decoders frequently suffer from spatial grounding deficits, resolution downsampling loss, and temporal redundancy in continuous video streams. 
 
-`backend/evaluation.py` aggregates the following values for original and processed outputs:
+This project investigates an inference-time visual preprocessing architecture designed to enhance VLM scene comprehension and downstream reasoning without modifying underlying model weights.
 
-- **BERTScore F1:** semantic similarity against the ground-truth description.
-- **BLEU:** smoothed n-gram overlap against the ground truth.
-- **CLIPScore:** reference-free image-text alignment using CLIP, scaled by the configured weight.
-- **Latency:** measured inference/processing time and the absolute difference between baseline and processed runs.
-- **Token count:** basic whitespace token count for each generated response.
+---
 
-BERTScore and CLIP resources are initialized lazily and cached after their first use. CUDA is selected when available; otherwise the application falls back to CPU.
+## 🚀 What This Software Is About
 
-## Current selectable options
+This repository contains research software developed at the **University of Stuttgart** (Institute of Industrial Automation and Software Engineering) that implements a unified framework to:
+* **Isolate visual perturbations:** Apply targeted task-aware spatial prompting techniques including Context-Aware Zoom (CAZ), Query-Aware Bounding Box (QABB), Semantic Hazard Isolation (SHI), and Perception Metric Grounding (PMG).
+* **Optimize temporal video sampling:** Execute dual-track query-aware video keyframe extraction pipelines (QA-IF and Smart Sampling) to prevent downstream edge VLM token saturation.
+* **Quantify semantic performance:** Automatically benchmark original versus processed outputs using rigorous linguistic, visual, timing, and token-level metrics (BERTScore, BLEU, and CLIPScore) alongside an automated multi-agent debate evaluation jury.
 
-The web UI receives its options from `backend/config.py`.
+---
 
-Currently configured VLM choices are `qwen3-vl:4b`, `llava-phi3`, and `mock`. The live models are accessed through Ollama; `mock` is intended for local workflow checks without a live model response.
+## 🏗️ Repository Architecture
 
-The currently configured image augmentation choices are `FastSAM`, `MobileSAM`, `PerceptionMetricGrounding`, and `SceneGraphGeneration`. The source tree contains additional augmentation implementations, but they are not all enabled in the dispatcher and configuration yet.
+```text
+Software/
+├── README.md                       # Project-wide documentation & research guide
+├── requirements.txt                # Complete Python dependency list
+├── backend/                        # FastAPI core and evaluation engine
+│   ├── main.py                     # Asynchronous FastAPI server & SSE generator
+│   ├── config.py                   # Model registry & selectable processing methods
+│   ├── inference.py                # Local Ollama/VLM inference adapter
+│   ├── evaluation.py               # BERTScore, BLEU, CLIPScore, latency, & token analytics
+│   ├── augmentation.py             # Modular image augmentation dispatcher
+│   └── Augmentify/                 # Advanced augmentations & video keyframe strategies
+│       ├── augment/                # Spatial visual prompt engines (CAZ, QABB, SHI, PMG)
+│       ├── FramesExtraction/       # Video keyframe samplers (QA-IF, Smart Sampling, etc.)
+│       └── Futurework/             # Abstract templates & experimental stubs
+├── frontend/                       # Web-based interactive study dashboards
+│   ├── index.html                  # Manual single-item evaluation studio
+│   ├── excel_evaluator.html        # Automated dataset batch runner (.xlsx/.csv)
+│   └── dashboard.html              # Results analytics & export studio
+├── HPC Scripts/                    # High-Performance Computing evaluation scripts
+│   ├── debate_syste.py             # Heterogeneous multi-agent debate consensus framework
+│   └── LLM_as_Judge.py             # Automated semantic correctness grading pipeline
+├── resources/                      # Research paper PDF, presentation slides, and demo assets
+├── models/                         # Local model weights and tracking checkpoints
+└── static/                         # Runtime uploaded media and cached CSV results
+```
 
-The video interface registers twenty keyframe strategies, including codec I-frame extraction, scene detection, SSIM, histogram difference, optical flow, CLIP-based ranking, clustering, BOLT, query-aware I-frames, and Smart Sampling. See [backend/Augmentify/FramesExtraction/README.md](backend/Augmentify/FramesExtraction/README.md) for the complete list.
+---
 
-## Requirements and setup
+## 📊 Evaluation Metrics
 
-### Prerequisites
+The backend (`backend/evaluation.py`) performs automated multi-modal scoring comparing baseline model responses against augmented or processed inferences across five core analytical dimensions:
+* **BERTScore F1:** Measures contextual semantic similarity against ground-truth descriptions using contextual token embeddings.
+* **BLEU:** Computes smoothed n-gram precision overlap.
+* **CLIPScore:** Evaluates reference-free image-text alignment scaled via weighted visual embeddings to detect cross-modal visual hallucinations.
+* **Latency Delta ($\Delta t$):** Isolates net computational overhead introduced by visual transformations.
+* **Token Output Volume:** Tracks exact subword generation volume to measure token processing economy.
 
-- Python 3.10 or newer is recommended.
-- An Ollama installation and the desired local VLMs are required for live inference. For example, install the model names configured in `backend/config.py`.
-- Sufficient disk space is required for the checked-in and downloaded model weights under `models/`.
-- A GPU is optional. PyTorch and the evaluation modules can use CPU, although model-heavy operations will be slower.
+---
 
-### Install dependencies
+## 🛠️ Installation & Setup
 
-From the repository root, create and activate a virtual environment, then install the complete dependency set:
+### 1. Prerequisites
+* **Python 3.10+** recommended.
+* [Ollama](https://ollama.com/) installed locally for running target VLMs (e.g., `qwen3-vl:4b`, `llava-phi3`).
+* Sufficient local storage under `models/` for checkpoints.
+
+### 2. Environment Setup
+Clone the repository and configure your virtual environment from the root directory:
 
 ```powershell
 python -m venv .venv
@@ -57,94 +96,35 @@ python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
 ```
 
-`backend/Augmentify/requirements.txt` is only a small package-specific list and does not replace the root requirements file.
-
-### Start the application
-
-The backend uses imports that are resolved from the `backend` directory. Start Uvicorn from that directory:
+### 3. Running the Backend Server
+Navigate to the backend directory and launch the FastAPI server via Uvicorn:
 
 ```powershell
 cd backend
 python -m uvicorn main:app --reload
 ```
 
-Open `http://127.0.0.1:8000` in a browser. The application serves the HTML files from `../frontend` and static output from `../static` relative to the backend working directory.
+Open **`http://127.0.0.1:8000`** in your browser to access the local web interface.
 
-## API endpoints
+---
 
-| Endpoint | Purpose |
-| --- | --- |
-| `GET /` | Serves the manual image/video evaluation page. |
-| `GET /excel_studio` | Serves the spreadsheet batch-evaluation page. |
-| `POST /process` | Runs the selected workflow and streams progress/results. |
-| `GET /download_csv/{session_token}` | Downloads cached or in-memory results as CSV. |
-| `GET /download_metrics?session_token=...` | Downloads the current session as an Excel workbook. |
+## 🌐 Interactive Documentation
 
-##  Project Documentation
-
-Explore the complete, interactive modern API documentation for the backend modules, classes, and pipelines live on the web:
+Explore full API references, module breakdowns, and code-level documentation generated live via `pdoc`:
 
 👉 **[View Live Documentation Site](https://raihhann.github.io/vlm-augmentation-pipeline/)**
 
-## Repository structure
+---
 
+## 🔬 Experimental Workflows & Features
 
-```text
-Software/
-├── README.md                         # Project-wide documentation
-├── requirements.txt                  # Complete Python dependency list
-├── backend/
-│   ├── README.md                     # Backend architecture and runtime guide
-│   ├── main.py                       # FastAPI application and evaluation routes
-│   ├── config.py                     # Models and selectable processing methods
-│   ├── inference.py                  # Ollama/VLM inference adapter
-│   ├── evaluation.py                 # BERTScore, BLEU, CLIPScore, timing, tokens
-│   ├── augmentation.py               # Augmentation dispatcher
-│   ├── model_manager.py              # Ollama model preloading helper
-│   └── Augmentify/
-│       ├── README.md                 # Package overview
-│       ├── augment/                  # Image augmentation implementations
-│       │   └── README.md
-│       ├── FramesExtraction/         # Video keyframe strategies
-│       │   └── README.md
-│       └── FutureWork/               # Planned modules and research extensions
-│           └── README.md
-├── frontend/
-│   ├── README.md                     # Browser UI documentation
-│   ├── index.html                    # Manual image/video workflow
-│   ├── excel_evaluator.html          # Spreadsheet workflow
-│   └── dashboard.html                # Results dashboard
-├── models/                           # Model weights and downloaded repositories
-└── static/
-    ├── styles.css                    # Shared static styles
-    ├── uploads/                      # Runtime uploaded/processed media
-    └── cache/                        # Runtime CSV evaluation caches
-```
+The framework provides both manual single-sample validation and batch spreadsheet evaluation studios:
+* **Task-Aware Spatial Prompts:** Includes Context-Aware Zoom (CAZ), Query-Aware Bounding Box (QABB), Semantic Hazard Isolation (SHI), and Perception Metric Grounding (PMG).
+* **Query-Aware Video Keyframing:** Features dual-track extraction pipelines consisting of Codec-Level I-Frame Demuxing with Dense Grounding (QA-IF) and Smart Sampling.
+* **Dataset Batch Studio (`/excel_studio`):** Upload CSV/Excel batches to run repeatable matrix evaluations across multi-column prompts and files with real-time Server-Sent Events (SSE) streaming.
 
-The runtime `static/uploads/` and `static/cache/` directories can grow during experiments. Treat generated files as experiment artifacts and remove them when they are no longer needed. Model files can be very large and should be managed separately from source changes when possible.
+---
 
-## Typical experiment flow
+## 📝 Citation & Research Status
 
-1. Start Ollama and verify that the selected VLM is available.
-2. Start the FastAPI application from `backend/`.
-3. Open the manual or Excel workflow in the browser.
-4. Choose a model, media, prompt, ground truth, and processing method.
-5. Wait for the streamed processing run to finish.
-6. Inspect original/processed outputs and metrics in the dashboard.
-7. Export CSV or Excel results for statistical analysis.
-
-## Development notes
-
-- Image augmentations generally accept a PIL image and return a PIL image, often as an original/processed collage for visual inspection.
-- Video extraction functions share the `extract_keyframes(video_path, max_frames, prompt, output_folder, **kwargs)` convention and return saved frame paths.
-- The backend currently stores session results in an in-memory dictionary. Restarting the server removes sessions that are not represented by a runtime cache file.
-- `backend/model_manager.py` exists as a helper for Ollama model preloading but is not currently part of the main request path.
-- There is no comprehensive automated test suite in the repository yet. Validate changes with the local environment and a small representative media run.
-
-## Future work
-
-Planned work is documented in [backend/Augmentify/FutureWork/README.md](backend/Augmentify/FutureWork/README.md). The folder is intentionally a home for future module boilerplates and module-level docstrings describing the intended implementation before code is added.
-
-## Research status
-
-This codebase is maintained as research software for experimentation and reproducibility. Results should be interpreted alongside the selected model, hardware, prompt, dataset, augmentation parameters, and keyframe budget. No license or publication-specific usage terms have been declared in this repository; consult the project owner before redistributing model weights or derived artifacts.
+This software is maintained as an open-ended research prototype for academic experimentation at the University of Stuttgart. If you utilize this pipeline or extensions of it in your academic work, please consult the project authors or reference the included research paper under `./resources/main.pdf`.
