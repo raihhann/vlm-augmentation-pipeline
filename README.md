@@ -80,7 +80,14 @@ Open `http://127.0.0.1:8000` in a browser. The application serves the HTML files
 | `GET /download_csv/{session_token}` | Downloads cached or in-memory results as CSV. |
 | `GET /download_metrics?session_token=...` | Downloads the current session as an Excel workbook. |
 
+##  Project Documentation
+
+Explore the complete, interactive modern API documentation for the backend modules, classes, and pipelines live on the web:
+
+👉 **[View Live Documentation Site](https://raihhann.github.io/vlm-augmentation-pipeline/)**
+
 ## Repository structure
+
 
 ```text
 Software/
