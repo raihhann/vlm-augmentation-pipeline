@@ -14,7 +14,7 @@ from PIL import Image
 from bert_score import BERTScorer
 from nltk.translate.bleu_score import sentence_bleu, SmoothingFunction
 from transformers import CLIPModel, CLIPProcessor
-import Augmentify.FutureWork.light_eval as light_eval
+from Augmentify.FutureWork.light_eval import eval_lightweight_semantics as light_eval
 
 # ==========================================
 # Global Caches for Lazy-Loaded Models
@@ -182,7 +182,7 @@ def evaluate_lightweight_semantics(prediction: str, ground_truth: str) -> float:
     evaluation method to efficiently score VLM outputs against ground truths 
     without incurring heavy embedding or compute bottlenecks.
     """
-    return light_eval.evaluate_lightweight_semantics(prediction, ground_truth)
+    return light_eval(prediction, ground_truth)
 
 
 

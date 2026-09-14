@@ -352,6 +352,9 @@
                 <div class="metric-row" style="border-bottom: none;">
                     <span>Evaluated Run Token Footprint</span><span id="metric-tok-proc" style="color: var(--clr-rose);">-</span>
                 </div>
+                <div class="metric-row" style="border-bottom: none;">
+                    <span>FutureWork : Semantic Score</span><span id="metric-sem-corr" style="color: var(--clr-purple);">-</span>
+                </div>
             </div>
         </div>
 
@@ -388,6 +391,7 @@ function loadTargetMatrixRunCell(element, runRecord) {
     document.getElementById("metric-bl-proc").textContent = runRecord.processed_bleu;
     document.getElementById("metric-tok-orig").textContent = runRecord.token_original + " t";
     document.getElementById("metric-tok-proc").textContent = runRecord.token_processed + " t";
+    document.getElementById("metric-sem-corr").textContent = runRecord.semantic_score + " %";
     
     const extractedBtn = document.getElementById("show-extracted");
     const augmentedBtn = document.getElementById("show-augmented");

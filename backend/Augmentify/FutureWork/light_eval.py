@@ -2,7 +2,7 @@
 
 import random
 
-def evaluate_lightweight_semantics(prediction: str, ground_truth: str) -> float:
+def eval_lightweight_semantics(prediction: str, ground_truth: str) -> float:
     """Evaluate VLM semantic alignment using a lightweight heuristic approach.
 
     [FUTURE WORK]: Develop and integrate a lightweight semantic understanding 
