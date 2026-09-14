@@ -14,10 +14,9 @@ tests/
 │   ├── test_evaluation.py         # BLEU, BERTScore, CLIPScore, latency, and tokens
 │   └── test_frames_extraction.py  # 20 keyframe sampling algorithms & mathematical checks
 └── Report/                 # Generated standalone HTML test run summaries
-    ├── report-aug.html     # Augmentation test report
-    ├── report-eval.html    # Metrics and evaluation report
-    ├── report-frames.html  # Keyframe extraction report
-    └── final_report.html   # Consolidated test execution report
+    ├── Image-Aug-Tests.html     # Augmentation test report
+    ├── Eval-Methods-Tests.html    # Metrics and evaluation report
+    └── Frame-Extraction-Tests.html   # Consolidated test execution report
 ```
 
 ---
@@ -87,7 +86,6 @@ pytest tests/Scripts/test_frames_extraction.py --html=tests/Report/report-frames
 
 HTML reports generated from test executions are available in the `Report/` folder:
 
-* [Augmentation Test Report](./Report/report-aug.html)
-* [Evaluation Test Report](./Report/report-eval.html)
-* [Frame Extraction Test Report](./Report/report-frames.html)
-* [Consolidated Final Report](./Report/final_report.html)
+* [Augmentation Test Report](./Report/Image-Aug-Tests.html)
+* [Evaluation Test Report](./Report/Eval-Methods-Tests.html)
+* [Frame Extraction Test Report](./Report/Frame-Extraction-Tests.html)
