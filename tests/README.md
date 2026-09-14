@@ -86,6 +86,6 @@ pytest tests/Scripts/test_frames_extraction.py --html=tests/Report/report-frames
 
 HTML reports generated from test executions are available in the `Report/` folder:
 
-* [Augmentation Test Report](./Report/Image-Aug-Tests.html)
-* [Evaluation Test Report](./Report/Eval-Methods-Tests.html)
-* [Frame Extraction Test Report](./Report/Frame-Extraction-Tests.html)
+* [Visual Augmentation Test Dashboard](https://raihhann.github.io/vlm-augmentation-pipeline/reports/Image-Aug-Tests.html)
+* [Evaluation Metrics Test Dashboard](https://raihhann.github.io/vlm-augmentation-pipeline/reports/Eval-Methods-Tests.html)
+* [Frame Extraction Test Dashboard](https://raihhann.github.io/vlm-augmentation-pipeline/reports/Frame-Extraction-Tests.html)
