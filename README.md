@@ -125,6 +125,16 @@ The framework provides both manual single-sample validation and batch spreadshee
 
 ---
 
+---
+
+## Datasets & Benchmark Evaluation Results
+
+The complete experimental datasets, benchmark image/video assets, and evaluation summary spreadsheets (`.xlsx`) generated across the models and augmentation methods are hosted externally on Google Drive:
+
+* **[Access Benchmark Datasets & Evaluation Spreadsheets (Google Drive)](https://drive.google.com/drive/folders/11zHnwda0DVpC0DGKj5fMmzQTKbs_5lyN?usp=sharing)**
+
+> **Note:** Access to this Google Drive repository is available for a **limited period only**. 
+
 ## 📝 Citation & Research Status
 
 This software is maintained as an open-ended research prototype for academic experimentation at the University of Stuttgart. If you utilize this pipeline or extensions of it in your academic work, please consult the project authors or reference the included research paper under `./resources/main.pdf`.
